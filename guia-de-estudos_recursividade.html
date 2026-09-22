@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Fácil de Recursividade em C</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --accent: #4F46E5;
+  --accent-soft: #EEF2FF;
+  --accent-2: #7C3AED;
+  --accent-2-soft: #F5F3FF;
+  --success: #059669;
+  --success-soft: #ECFDF5;
+  --warning: #D97706;
+  --warning-soft: #FFFBEB;
+  --danger: #DC2626;
+  --danger-soft: #FEF2F2;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --border-soft: #F3F4F6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.7; padding: 24px 16px; font-size: 16px; max-width: 1100px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { color: var(--accent); font-size: 2.1rem; margin-bottom: 6px; font-weight: 700; }
+.header p { color: var(--muted); font-size: 1rem; font-weight: 500; }
+
+.nav-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: var(--card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s ease; font-family: inherit; font-size: 0.95rem; }
+.tab-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: var(--card); border: 1px solid var(--border); padding: 22px; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 20px; }
+
+.box-conceito  { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-analogia  { border-left: 4px solid var(--accent-2); background: var(--accent-2-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-pegadinha { border-left: 4px solid var(--danger); background: var(--danger-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-dica      { border-left: 4px solid var(--success); background: var(--success-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 8px; overflow: hidden; }
+th, td { border: 1px solid var(--border); padding: 12px 14px; text-align: left; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+
+pre { background: #0F172A; color: #F8FAFC; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 0.9rem; margin: 12px 0; }
+code { font-family: 'Fira Code', Consolas, monospace; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.quiz-opt { background: var(--border-soft); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; font-family: inherit; color: var(--text); }
+.quiz-opt:hover { background: var(--accent-soft); border-color: var(--accent); }
+.feedback { margin-top: 12px; padding: 14px; border-radius: 8px; display: none; font-size: 0.95rem; }
+.feedback.correct { background: var(--success-soft); color: var(--success); border: 1px solid var(--success); }
+.feedback.incorrect { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); }
+
+h2 { color: var(--accent); font-size: 1.4rem; margin-bottom: 12px; font-weight: 700; }
+h3 { color: var(--accent-2); font-size: 1.15rem; margin: 18px 0 10px; font-weight: 700; }
+h4 { color: var(--text); font-size: 1rem; margin: 14px 0 8px; font-weight: 700; }
+p { margin-bottom: 10px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 6px; }
+.badge { display: inline-block; background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; }
+.badge.verde { background: var(--success); }
+.badge.vermelho { background: var(--danger); }
+.badge.roxo { background: var(--accent-2); }
+.badge.laranja { background: var(--warning); }
+.box-title { font-weight: 700; display: block; margin-bottom: 6px; }
+.box-conceito .box-title { color: var(--accent); }
+.box-analogia .box-title { color: var(--accent-2); }
+.box-pegadinha .box-title { color: var(--danger); }
+.box-dica .box-title { color: var(--success); }
+.trace-table td { font-family: 'Fira Code', Consolas, monospace; font-size: 0.85rem; }
+.trace-table th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; }
+.callout-mini { background: var(--warning-soft); border: 1px dashed var(--warning); padding: 12px 14px; border-radius: 10px; margin: 12px 0; font-size: 0.94rem; }
+.callout-mini strong { color: var(--warning); }
+.quiz-block { border-top: 1px solid var(--border-soft); padding-top: 18px; margin-top: 18px; }
+.quiz-block:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.quiz-q { font-weight: 700; margin-bottom: 6px; }
+.quiz-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 6px; background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning); margin-left: 8px; vertical-align: middle; }
+.ascii { background: #0F172A; color: #A5F3FC; font-family: 'Fira Code', Consolas, monospace; font-size: 0.82rem; padding: 16px; border-radius: 10px; overflow-x: auto; line-height: 1.5; white-space: pre; }
+.footer-note { text-align: center; color: var(--muted); font-size: 0.85rem; margin: 30px 0 10px; }
+.step-list { counter-reset: step; list-style: none; margin-left: 0; }
+.step-list li { counter-increment: step; position: relative; padding-left: 38px; margin-bottom: 10px; }
+.step-list li::before { content: counter(step); position: absolute; left: 0; top: 2px; width: 26px; height: 26px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+@media (max-width: 640px) {
+  body { padding: 16px 10px; font-size: 15px; }
+  .header h1 { font-size: 1.5rem; }
+  .tab-btn { padding: 8px 13px; font-size: 0.85rem; }
+  th, td { padding: 8px 9px; font-size: 0.85rem; }
+  pre { font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guia Fácil de Recursividade em C</h1>
+  <p>Explicado do jeito mais simples possível — para quem nunca entendeu esse assunto</p>
+</div>
+
+<nav class="nav-tabs">
+  <button class="tab-btn active" data-tab="teoria">1. O Básico</button>
+  <button class="tab-btn" data-tab="exemplos">2. Exemplos</button>
+  <button class="tab-btn" data-tab="codigo">3. Código &amp; Pilha</button>
+  <button class="tab-btn" data-tab="comparacoes">4. Comparações</button>
+  <button class="tab-btn" data-tab="resumo">5. Resumo</button>
+  <button class="tab-btn" data-tab="quiz">6. Quiz</button>
+</nav>
+
+<!-- ============================ ABA 1 - TEORIA ============================ -->
+<main>
+<section id="teoria" class="tab-content active">
+
+  <div class="card">
+    <span class="badge">Parte 1</span>
+    <h2>O que é recursividade?</h2>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 Explicação simples</span>
+      <p><strong>Recursividade</strong> é quando uma função chama ela mesma para resolver um pedacinho menor do mesmo problema.</p>
+      <p>Imagine que você precisa somar uma lista gigante de números. Em vez de somar tudo de uma vez, você soma o primeiro número com "a soma do resto da lista". Aí, para somar "o resto da lista", você faz a mesma coisa de novo: pega o próximo número e soma com o resto. E assim vai até a lista acabar.</p>
+      <p>Em C, isso é permitido: dentro de uma função, você pode escrever o nome dela mesma para chamá-la de novo.</p>
+    </div>
+
+    <div class="box-analogia">
+      <span class="box-title">🎭 Comparação — As bonecas russas</span>
+      <p>Pense em uma boneca russa. Você abre ela e tem uma boneca menor dentro. Abre a menor e tem outra ainda menor. E assim vai.</p>
+      <p>Para saber quantas bonecas existem, você abre a primeira, vê que tem mais uma dentro, e <em>pede para a boneca de dentro responder a mesma pergunta</em>. A boneca menor faz igual: abre e passa a pergunta para a próxima. Quando chega na bonequinha que <strong>não abre mais</strong>, a contagem para e o resultado começa a voltar.</p>
+      <p>A bonequinha que não abre é o <strong>caso base</strong>. Se toda boneca abrisse, você nunca ia parar de abrir — isso é a <strong>recursão infinita</strong>.</p>
+    </div>
+
+    <h3>Toda função recursiva precisa de 3 coisas</h3>
+    <table>
+      <thead>
+        <tr><th>Coisa</th><th>O que é</th><th>Exemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Caso base</strong></td>
+          <td>É a hora em que a função <em>para</em> de se chamar. É a resposta mais simples, que ela já sabe de cabeça.</td>
+          <td><code>if (n &lt;= 1) return 1;</code></td>
+        </tr>
+        <tr>
+          <td><strong>Passo recursivo</strong></td>
+          <td>É a parte em que a função chama ela mesma, mas com um problema <em>menor</em>.</td>
+          <td><code>return n * fat(n - 1);</code></td>
+        </tr>
+        <tr>
+          <td><strong>Caminho até o fim</strong></td>
+          <td>Cada chamada precisa <em>chegar mais perto</em> do caso base. Se ficar se afastando, nunca para.</td>
+          <td><code>n - 1</code> chega perto de 0. <code>n + 1</code> se afasta.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Não basta ter caso base — precisa caminhar até ele</h3>
+    <p>Veja a diferença entre essas duas funções. As duas têm caso base, mas só uma funciona:</p>
+
+<pre><code class="language-c">/* ✅ FUNCIONA: n vai diminuindo até chegar em 1 */
+int fatorial(int n) {
+    if (n &lt;= 1) return 1;
+    return n * fatorial(n - 1);
+}
+
+/* ❌ NÃO FUNCIONA: n vai aumentando e nunca chega no caso base */
+int somaErrada(int n) {
+    if (n &lt;= 1) return 1;
+    return n + somaErrada(n + 1);   /* o "n + 1" se afasta do fim! */
+}</code></pre>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Pegadinha nº 1 — "Tem caso base, então está certo"</span>
+      <p>Mentira! Ter caso base <strong>não garante</strong> que a função vai parar. A pegadinha clássica da prova é mostrar um código com <code>if (n == 0) return 0;</code> mas com <code>f(n + 1)</code> ou <code>f(n)</code> no passo recursivo. Nos dois casos o programa trava com <strong>estouro da pilha</strong> (Stack Overflow).</p>
+      <p>Dica: imagine os números que vão sendo passados um por um. Se eles não chegam no caso base, a resposta é "trava o programa".</p>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Teste rápido dos 3 P</span>
+      <p>Antes de aceitar qualquer função recursiva, pergunte:</p>
+      <ul>
+        <li><strong>P</strong>arada → tem um caso base escrito?</li>
+        <li><strong>P</strong>rogresso → cada chamada fica mais perto do caso base?</li>
+        <li><strong>P</strong>equeno → a função resolve sozinha o caso mais simples?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge roxo">Parte 2</span>
+    <h2>Como o computador executa a recursão (a "pilha")</h2>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 A pilha de chamadas</span>
+      <p>Quando uma função é chamada, o computador guarda uma <strong>caixinha</strong> na memória com as informações dela: os valores que ela recebeu, as variáveis criadas dentro dela e onde voltar depois. Essa caixinha se chama <strong>moldura</strong>.</p>
+      <p>Todas essas caixinhas ficam empilhadas uma em cima da outra. Essa pilha funciona assim: <strong>a última caixinha que entrou é a primeira que sai</strong>. É o mesmo sistema de uma pilha de pratos: você só consegue pegar o prato de cima.</p>
+      <p>Detalhe importante: cada chamada tem a <em>sua própria</em> cópia da variável <code>n</code>. Não é a mesma variável compartilhada — cada caixinha guarda um valor diferente.</p>
+    </div>
+
+    <div class="box-analogia">
+      <span class="box-title">🎭 Comparação — Pilha de pratos</span>
+      <p>Pense na pia da cozinha. O cozinheiro coloca um prato novo <em>em cima</em> dos outros. Na hora de lavar, ele pega sempre o que está <em>no topo</em>. Ninguém tira o prato de baixo antes de tirar os de cima.</p>
+      <p>Com funções é igual: a última chamada a entrar é a primeira a sair. Enquanto a do topo não termina, todas as de baixo ficam paradas, esperando com seus valores guardados.</p>
+    </div>
+
+    <h3>As duas fases: ida e volta</h3>
+    <table>
+      <thead>
+        <tr><th>Fase</th><th>O que acontece</th><th>Na pilha</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ida</strong> (descida)</td>
+          <td>A função vai se chamando com números cada vez menores até chegar no caso base.</td>
+          <td>Vai <em>empilhando</em> caixinhas.</td>
+        </tr>
+        <tr>
+          <td><strong>Volta</strong> (subida)</td>
+          <td>Chegou no caso base. Agora cada chamada devolve o resultado para a de baixo.</td>
+          <td>Vai <em>desempilhando</em> de cima para baixo.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Por que o programa trava (Stack Overflow)</h3>
+    <p>A pilha tem um tamanho <strong>limitado</strong> (coisa de 1 a 8 MB, dependendo da máquina). Cada chamada gasta um pedacinho. Se você chamar a função vezes demais (porque está em recursão infinita, ou porque o número é muito grande), a pilha enche e o programa fecha sozinho com um erro chamado <strong>Stack Overflow</strong>.</p>
+    <ul>
+      <li>Recursão infinita → trava na certa.</li>
+      <li>Recursão muito funda (tipo <code>fatorial(1000000)</code>) → também trava, mesmo estando certa.</li>
+      <li>Solução: usar laço (<code>for</code> / <code>while</code>) em vez de recursão.</li>
+    </ul>
+
+    <h3>Cuidado com a posição do printf!</h3>
+    <p>Esse é o assunto mais cobrado em prova. A posição do <code>printf</code> muda a ordem da saída:</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+/* printf ANTES da chamada → imprime na IDA: 5 4 3 2 1 */
+void regressiva(int n) {
+    if (n &lt; 1) return;
+    printf("%d ", n);       /* imprime logo, antes de descer */
+    regressiva(n - 1);
+}
+
+/* printf DEPOIS da chamada → imprime na VOLTA: 1 2 3 4 5 */
+void crescente(int n) {
+    if (n &lt; 1) return;
+    crescente(n - 1);       /* desce primeiro... */
+    printf("%d ", n);       /* ...e só imprime na subida */
+}
+
+int main(void) {
+    printf("Descendo: ");
+    regressiva(5);
+    printf("\nSubindo:  ");
+    crescente(5);
+    printf("\n");
+    return 0;
+}</code></pre>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 Por que muda?</span>
+      <p>No <strong>primeiro caso</strong>, o <code>printf</code> vem antes da chamada. Ele é executado na hora, antes de descer. Por isso imprime 5, depois 4, depois 3, 2, 1 — a ordem da descida.</p>
+      <p>No <strong>segundo caso</strong>, o <code>printf</code> vem depois da chamada. A função desce toda até o fim e só na hora de voltar cada caixinha executa o <code>printf</code>. Como a volta é de baixo para cima, imprime 1, 2, 3, 4, 5.</p>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Pegadinha nº 2 — Ordem da saída</span>
+      <p>A prova coloca dois ou três <code>printf</code> na função e pergunta a saída exata. <strong>Não responda de cabeça!</strong> Simule a pilha no papel, anotando cada impressão na ordem em que acontece. Exemplo: se a função tiver <code>printf</code> antes <em>e</em> depois da chamada, com <code>n = 3</code>, a saída é <code>3 2 1 1 2 3</code>.</p>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Truque do "caminho de ida e volta"</span>
+      <p>Desenhe uma seta descendo (ida) e outra subindo (volta). Coloque cada <code>printf</code> na seta que combina com sua posição no código: se está antes da chamada, vai na ida; se está depois, vai na volta. Pronto, você resolve qualquer questão dessas.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge verde">Parte 3</span>
+    <h2>Exemplo 1 — Fatorial</h2>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 O que é fatorial?</span>
+      <p>Fatorial de um número é ele multiplicado por todos os números menores que ele até 1. Escreve-se com um "!" no final. Exemplo: <code>5! = 5 × 4 × 3 × 2 × 1 = 120</code>.</p>
+      <p>A regra matemática já é recursiva por natureza:</p>
+      <ul>
+        <li><strong>Caso base:</strong> <code>0! = 1</code> e <code>1! = 1</code></li>
+        <li><strong>Passo recursivo:</strong> <code>n! = n × (n − 1)!</code></li>
+      </ul>
+      <p>Ou seja: o fatorial de 5 é 5 vezes o fatorial de 4. O fatorial de 4 é 4 vezes o fatorial de 3. E por aí vai.</p>
+    </div>
+
+    <div class="box-analogia">
+      <span class="box-title">🎭 Comparação — Corrente de blocos</span>
+      <p>É como uma corrente: o bloco 5 está preso no bloco 4, que está preso no 3, e assim até o bloco 1, que está preso na parede. Para saber o peso total, você precisa descer até o último e depois voltar multiplicando o peso de cada um. O bloco preso na parede é o caso base: sem ele, a corrente não fica de pé.</p>
+    </div>
+
+    <h3>Código em C</h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int fatorial(int n) {
+    if (n &lt;= 1) return 1;              /* caso base */
+    return n * fatorial(n - 1);        /* passo recursivo */
+}
+
+int main(void) {
+    printf("%d\n", fatorial(5));       /* imprime 120 */
+    return 0;
+}</code></pre>
+
+    <h3>Como o computador pensa para fatorial(4)</h3>
+    <table class="trace-table">
+      <thead><tr><th>Passo</th><th>O que acontece</th><th>n</th><th>Está esperando</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Chama fatorial(4)</td><td>4</td><td>calcular <code>4 * ?</code></td></tr>
+        <tr><td>2</td><td>Chama fatorial(3)</td><td>3</td><td>calcular <code>3 * ?</code></td></tr>
+        <tr><td>3</td><td>Chama fatorial(2)</td><td>2</td><td>calcular <code>2 * ?</code></td></tr>
+        <tr><td>4</td><td>Chama fatorial(1)</td><td>1</td><td><strong>caso base! retorna 1</strong></td></tr>
+        <tr><td>5</td><td>fatorial(2) volta</td><td>2</td><td>faz <code>2 * 1 = 2</code></td></tr>
+        <tr><td>6</td><td>fatorial(3) volta</td><td>3</td><td>faz <code>3 * 2 = 6</code></td></tr>
+        <tr><td>7</td><td>fatorial(4) volta</td><td>4</td><td>faz <code>4 * 6 = 24</code></td></tr>
+      </tbody>
+    </table>
+    <p>Resultado final: <strong>fatorial(4) = 24</strong>.</p>
+
+    <h4>Quanto tempo e memória isso gasta?</h4>
+    <table>
+      <thead><tr><th>Forma</th><th>Tempo</th><th>Memória</th><th>Por quê</th></tr></thead>
+      <tbody>
+        <tr><td>Com laço (<code>for</code>)</td><td>O(n)</td><td><strong>O(1)</strong></td><td>Só usa umas duas variáveis.</td></tr>
+        <tr><td>Recursiva</td><td>O(n)</td><td><strong>O(n)</strong></td><td>Guarda n caixinhas na pilha ao mesmo tempo.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Pegadinha nº 3 — Número negativo e estouro</span>
+      <p>Dois detalhes que derrubam gente na prova:</p>
+      <ul>
+        <li><strong>Número negativo:</strong> fatorial só existe para números maiores ou iguais a zero. Se alguém chamar <code>fatorial(-3)</code> sem validação, o programa pode entrar em loop infinito (se o caso base for <code>n == 0</code>) ou devolver 1 errado (se for <code>n &lt;= 1</code>).</li>
+        <li><strong>Estouro (overflow):</strong> uma variável <code>int</code> só aguenta até <code>12!</code>. <code>13!</code> já é grande demais. Para ir mais longe, use <code>long long</code>, que aguenta até <code>20!</code>.</li>
+      </ul>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Decore essa tabelinha</span>
+      <p><code>0! = 1</code>, <code>1! = 1</code>, <code>2! = 2</code>, <code>3! = 6</code>, <code>4! = 24</code>, <code>5! = 120</code>, <code>6! = 720</code>. As provas usam quase sempre 4 ou 5.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge laranja">Parte 4</span>
+    <h2>Exemplo 2 — Fibonacci</h2>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 O que é Fibonacci?</span>
+      <p>É uma sequência famosa onde cada número é a soma dos dois anteriores:</p>
+      <p><code>0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...</code></p>
+      <p>Repare: 0 + 1 = 1, depois 1 + 1 = 2, depois 1 + 2 = 3, depois 2 + 3 = 5...</p>
+      <p>Regras:</p>
+      <ul>
+        <li><strong>Caso base:</strong> F(0) = 0 e F(1) = 1</li>
+        <li><strong>Passo recursivo:</strong> F(n) = F(n − 1) + F(n − 2)</li>
+      </ul>
+      <p>Essa fórmula é <em>naturalmente</em> recursiva. Mas atenção: se você usar recursão do jeito "cru", o programa fica <strong>muito lento</strong>. Vamos ver por quê.</p>
+    </div>
+
+    <div class="box-analogia">
+      <span class="box-title">🎭 Comparação — Árvore genealógica que se repete</span>
+      <p>Para calcular F(5), você precisa de F(4) e F(3). Para calcular F(4), precisa de F(3) e F(2). Mas aí você percebe: o F(3) já foi calculado antes e agora está sendo calculado de novo. É como se você tivesse que ligar várias vezes para os mesmos parentes para perguntar a mesma coisa. Isso gasta muito tempo.</p>
+    </div>
+
+    <h3>Código em C (a versão simples, mas lenta)</h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int fib(int n) {
+    if (n &lt;= 1) return n;                       /* F(0)=0, F(1)=1 */
+    return fib(n - 1) + fib(n - 2);             /* passo recursivo */
+}
+
+int main(void) {
+    printf("%d\n", fib(10));   /* imprime 55 */
+    return 0;
+}</code></pre>
+
+    <h3>A árvore de chamadas de fib(5)</h3>
+    <div class="ascii">fib(5)
+├── fib(4)
+│   ├── fib(3)
+│   │   ├── fib(2)
+│   │   │   ├── fib(1) → 1
+│   │   │   └── fib(0) → 0
+│   │   └── fib(1) → 1
+│   └── fib(2)
+│       ├── fib(1) → 1
+│       └── fib(0) → 0
+└── fib(3)                   ← fib(3) calculado de novo!
+    ├── fib(2)               ← fib(2) calculado de novo!
+    │   ├── fib(1) → 1
+    │   └── fib(0) → 0
+    └── fib(1) → 1</div>
+
+    <p>Repare como <code>fib(3)</code> aparece duas vezes e <code>fib(2)</code> aparece três vezes. É muito trabalho repetido.</p>
+
+    <h3>Quantas vezes cada número é calculado em fib(5)</h3>
+    <table>
+      <thead><tr><th>Número</th><th>Quantas vezes é calculado</th><th>Desperdício</th></tr></thead>
+      <tbody>
+        <tr><td>fib(5)</td><td>1 vez</td><td>—</td></tr>
+        <tr><td>fib(4)</td><td>1 vez</td><td>—</td></tr>
+        <tr><td>fib(3)</td><td><strong>2 vezes</strong></td><td>1 cálculo à toa</td></tr>
+        <tr><td>fib(2)</td><td><strong>3 vezes</strong></td><td>2 cálculos à toa</td></tr>
+        <tr><td>fib(1)</td><td><strong>5 vezes</strong></td><td>4 cálculos à toa</td></tr>
+        <tr><td>fib(0)</td><td><strong>3 vezes</strong></td><td>2 cálculos à toa</td></tr>
+        <tr><td colspan="2"><strong>Total de chamadas para fib(5)</strong></td><td><strong>15 chamadas</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout-mini">
+      <strong>Fórmula para conferir:</strong> total de chamadas = <code>2 × F(n+1) − 1</code>. Para <code>n = 5</code>: <code>2 × 8 − 1 = 15</code>. Para <code>n = 30</code>, são mais de 2,6 milhões de chamadas — e para <code>n = 50</code>, mais de 40 bilhões.
+    </div>
+
+    <h4>Quanto tempo e memória gasta?</h4>
+    <table>
+      <thead><tr><th>Forma</th><th>Tempo</th><th>Memória</th><th>Observação</th></tr></thead>
+      <tbody>
+        <tr><td>Com laço (<code>for</code>)</td><td><strong>O(n)</strong></td><td><strong>O(1)</strong></td><td>Rápido e econômico.</td></tr>
+        <tr><td>Recursiva (do jeito que mostramos)</td><td><strong>O(2ⁿ)</strong></td><td>O(n)</td><td>Fica impossível para n acima de 40.</td></tr>
+        <tr><td>Recursiva guardando resultados</td><td>O(n)</td><td>O(n)</td><td>Guarda o que já calculou em um vetor.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Pegadinha nº 4 — "Recursiva é sempre melhor"</span>
+      <p>Fibonacci é o contraexemplo perfeito: a recursiva é mais bonita, mas é <strong>muito mais lenta</strong>. As provas adoram perguntar: "quantas chamadas a função recursiva faz para fib(5)?". A resposta é <strong>15</strong>, não 5 nem 6. Conte os nós da árvore, não os valores diferentes.</p>
+      <p>Outro detalhe traiçoeiro: a memória usada pela recursiva é <strong>O(n)</strong>, e não O(2ⁿ), porque a pilha só guarda o caminho que está aberto no momento. Os ramos que já terminaram são desempilhados.</p>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Truque — Guardar o que já calculou</span>
+      <p>Se a prova falar em "recursão com memoização", saiba que é isso: guardar cada resultado em um vetor, para não recalcular. O tempo cai de O(2ⁿ) para <strong>O(n)</strong>. É o meio-termo entre beleza e velocidade.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge vermelho">Parte 5</span>
+    <h2>Erros que sempre aparecem na prova</h2>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Erro 1 — Esquecer o caso base</span>
+<pre><code class="language-c">/* ❌ SEM caso base: desce para sempre */
+int fat(int n) {
+    return n * fat(n - 1);
+}</code></pre>
+      <p>O programa vai chamar: <code>fat(4)</code> → <code>fat(3)</code> → ... → <code>fat(0)</code> → <code>fat(-1)</code> → <code>fat(-2)</code> ... sem parar. Resultado: <strong>estouro da pilha e o programa fecha sozinho</strong>.</p>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Erro 2 — Chamar com o mesmo número (sem diminuir)</span>
+<pre><code class="language-c">/* ❌ n nunca muda: fica repetindo para sempre */
+int contador(int n) {
+    if (n == 0) return 0;
+    return contador(n);       /* chamou com o MESMO n */
+}</code></pre>
+      <p>Se a função chama ela mesma com o mesmo valor, é uma recursão infinita disfarçada. Sempre tem que <em>diminuir</em> (ou <em>aumentar</em>, se o caso base for maior).</p>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Erro 3 — Ir para o lado errado</span>
+<pre><code class="language-c">/* ❌ O caso base quer n &lt;= 1, mas a chamada AUMENTA o n */
+int f(int n) {
+    if (n &lt;= 1) return 1;
+    return n * f(n + 1);
+}</code></pre>
+      <p>Regra simples: o sinal do passo recursivo tem que apontar para o caso base. Se o caso base é <code>n == 0</code> e você começa com n maior que 0, use <code>n - 1</code>. Se o caso base é <code>n == 10</code> e você começa com n menor que 10, use <code>n + 1</code>.</p>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Erro 4 — Não tratar números inválidos</span>
+<pre><code class="language-c">/* ❌ Sem validação: fatorial(-3) faz besteira */
+int fatorial(int n) {
+    if (n &lt;= 1) return 1;      /* devolve 1 para número negativo! */
+    return n * fatorial(n - 1);
+}
+
+/* ✅ Com validação antes de tudo */
+int fatorialSeguro(int n) {
+    if (n &lt; 0) return -1;      /* marca como erro */
+    if (n &lt;= 1) return 1;
+    return n * fatorialSeguro(n - 1);
+}</code></pre>
+      <p>Em prova de escrita, quem valida a entrada ganha ponto extra. Em programa de verdade, isso evita resultados absurdos.</p>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Checklist antes de entregar a prova</span>
+      <ol class="step-list">
+        <li>Tem caso base escrito?</li>
+        <li>O caso base é alcançável a partir do primeiro valor?</li>
+        <li>Cada chamada diminui (ou aumenta) até chegar lá?</li>
+        <li>Funciona para pares <em>e</em> ímpares?</li>
+        <li>Funciona para os valores mais simples (0, 1)?</li>
+        <li>Números negativos ou fora do limite estão tratados?</li>
+        <li>A profundidade não vai estourar a pilha?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Parte 6</span>
+    <h2>Quando usar recursão e quando usar laço?</h2>
+
+    <table>
+      <thead><tr><th>Use recursão quando...</th><th>Use laço (for/while) quando...</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>O problema é naturalmente recursivo (fatorial, Fibonacci, torres de Hanói, MDC).</td>
+          <td>A tarefa é simples e sequencial (somar um vetor, contar elementos, percorrer lista).</td>
+        </tr>
+        <tr>
+          <td>Você trabalha com <strong>árvores</strong> ou <strong>grafos</strong>. Essas estruturas já são recursivas por natureza, e passar por elas com laço é bem mais complicado.</td>
+          <td>Tem <strong>pouca memória</strong> ou a profundidade pode ser enorme (milhares de níveis).</td>
+        </tr>
+        <tr>
+          <td>O código fica mais <strong>fácil de ler</strong> e entender.</td>
+          <td>O <strong>desempenho</strong> importa muito.</td>
+        </tr>
+        <tr>
+          <td>A profundidade é <strong>pequena e previsível</strong> (ex.: altura de uma árvore equilibrada = log n).</td>
+          <td>Existem <strong>cálculos repetidos</strong> na versão recursiva (Fibonacci é o exemplo clássico).</td>
+        </tr>
+        <tr>
+          <td>O problema se divide em pedaços menores (merge sort, busca binária).</td>
+          <td>O problema é somar coisas, uma atrás da outra.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 Coisa importante de saber</span>
+      <p>Toda função recursiva pode ser reescrita com laço. E toda função com laço pode ser reescrita de forma recursiva. As duas fazem a mesma coisa. A diferença está só em: <strong>clareza</strong>, <strong>memória usada</strong> e <strong>velocidade</strong>.</p>
+      <p>Quando você transforma uma recursão em laço, geralmente precisa guardar os valores em um vetor e controlar o "topo" na mão — porque o laço não tem pilha automática como a recursão tem.</p>
+    </div>
+
+    <div class="box-analogia">
+      <span class="box-title">🎭 Comparação — Escada ou elevador</span>
+      <p>Laço é subir de escada: passo a passo, sem precisar "lembrar" dos degraus anteriores. Recursão é pegar elevador: para chegar no 5º andar, precisa passar pelo 4º, que precisa do 3º, e cada andar fica "esperando" o de cima terminar. O elevador guarda mais coisa na cabeça (mais memória), mas para alguns prédios com passagens escondidas (árvores, grafos), é o único jeito prático.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================ ABA 2 - EXEMPLOS ============================ -->
+<section id="exemplos" class="tab-content">
+
+  <div class="card">
+    <span class="badge">Exemplo 1</span>
+    <h2>Contando de 5 até 1 e de 1 até 5</h2>
+
+    <p>Vamos ver duas funções quase iguais, mas com resultados opostos. A única diferença é <em>onde</em> está o <code>printf</code>.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+/* Imprime na IDA: 5 4 3 2 1 */
+void regressiva(int n) {
+    if (n &lt; 1) return;
+    printf("%d ", n);           /* antes de descer */
+    regressiva(n - 1);
+}
+
+/* Imprime na VOLTA: 1 2 3 4 5 */
+void crescente(int n) {
+    if (n &lt; 1) return;
+    crescente(n - 1);           /* desce primeiro */
+    printf("%d ", n);           /* imprime na subida */
+}
+
+int main(void) {
+    printf("Regressiva(5): ");
+    regressiva(5);
+    printf("\nCrescente(5):  ");
+    crescente(5);
+    printf("\n");
+    return 0;
+}</code></pre>
+
+    <h3>O que acontece por dentro</h3>
+    <p>Na <strong>regressiva</strong>: cada caixinha imprime seu número <em>na hora em que é criada</em>, ou seja, na descida. Por isso a ordem é 5, 4, 3, 2, 1.</p>
+    <p>Na <strong>crescente</strong>: a função desce até <code>n = 0</code> (caso base, retorna sem imprimir nada) e só na volta cada caixinha imprime o seu número. Como a volta é do topo para baixo, e o topo era o <code>n = 1</code>, imprime 1, 2, 3, 4, 5.</p>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Cai muito na prova</span>
+      <p>Questões do tipo "qual a saída do programa com n = 4?" aparecem quase sempre. Se a função tiver dois <code>printf</code> (um antes e um depois), a saída é espelhada. Por exemplo, com <code>n = 3</code>: <code>3 2 1 1 2 3</code>.</p>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Como responder rápido</span>
+      <p>Separe os <code>printf</code> em dois grupos: os que estão <em>antes</em> da chamada (ida) e os que estão <em>depois</em> (volta). Monte a sequência da ida (n até 1) e da volta (1 até n) e junte na ordem certa.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge verde">Exemplo 2</span>
+    <h2>Fatorial — com laço e com recursão</h2>
+
+    <p>Vamos ver as duas formas de calcular fatorial, lado a lado, para comparar.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+/* ---------- COM LAÇO ---------- */
+int fatorialLaco(int n) {
+    int resultado = 1;
+    for (int i = 2; i &lt;= n; i++) {
+        resultado = resultado * i;
+    }
+    return resultado;
+}
+
+/* ---------- COM RECURSÃO ---------- */
+int fatorialRec(int n) {
+    if (n &lt;= 1) return 1;              /* caso base */
+    return n * fatorialRec(n - 1);     /* passo recursivo */
+}
+
+int main(void) {
+    printf("Laço:     %d\n", fatorialLaco(5));   /* 120 */
+    printf("Recursão: %d\n", fatorialRec(5));    /* 120 */
+    return 0;
+}</code></pre>
+
+    <h3>Passo a passo para fatorialRec(4)</h3>
+    <table class="trace-table">
+      <thead><tr><th>Passo</th><th>Chamada</th><th>n</th><th>O que está esperando</th><th>Volta com</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>fatorialRec(4)</td><td>4</td><td><code>4 * ?</code></td><td>—</td></tr>
+        <tr><td>2</td><td>fatorialRec(3)</td><td>3</td><td><code>3 * ?</code></td><td>—</td></tr>
+        <tr><td>3</td><td>fatorialRec(2)</td><td>2</td><td><code>2 * ?</code></td><td>—</td></tr>
+        <tr><td>4</td><td>fatorialRec(1)</td><td>1</td><td><strong>caso base</strong></td><td>1</td></tr>
+        <tr><td>5</td><td>fatorialRec(2)</td><td>2</td><td><code>2 * 1</code></td><td>2</td></tr>
+        <tr><td>6</td><td>fatorialRec(3)</td><td>3</td><td><code>3 * 2</code></td><td>6</td></tr>
+        <tr><td>7</td><td>fatorialRec(4)</td><td>4</td><td><code>4 * 6</code></td><td><strong>24</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ O que a prova pergunta</span>
+      <ul>
+        <li><em>"Qual a memória usada pela versão recursiva?"</em> → <strong>O(n)</strong>. Muita gente responde O(1) por comparar com a versão com laço. Erro clássico!</li>
+        <li><em>"O que acontece com fatorial(0)?"</em> → O caso base <code>n &lt;= 1</code> captura e devolve 1. Certo.</li>
+        <li><em>"E com fatorial(-1)?"</em> → Se o caso base é <code>n &lt;= 1</code>, devolve 1 (o que está errado matematicamente). Se fosse <code>n == 0</code>, ia travar.</li>
+      </ul>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Macete</span>
+      <p>Número de caixinhas na pilha = profundidade da recursão = memória usada. Fatorial é profundidade n. Fibonacci é profundidade n (não 2ⁿ). Busca binária é profundidade log₂ n.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge laranja">Exemplo 3</span>
+    <h2>Fibonacci — recursivo x com laço</h2>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+/* ---------- COM LAÇO: rápido e econômico ---------- */
+int fibLaco(int n) {
+    if (n &lt;= 1) return n;
+    int a = 0, b = 1, c;
+    for (int i = 2; i &lt;= n; i++) {
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    return b;
+}
+
+/* ---------- RECURSIVO: bonito, mas lento ---------- */
+int fibRec(int n) {
+    if (n &lt;= 1) return n;
+    return fibRec(n - 1) + fibRec(n - 2);
+}
+
+int main(void) {
+    printf("Laço:     %d\n", fibLaco(10));   /* 55 */
+    printf("Recursão: %d\n", fibRec(10));    /* 55 */
+    return 0;
+}</code></pre>
+
+    <h3>Como o laço funciona por dentro (para fib(7))</h3>
+    <table class="trace-table">
+      <thead><tr><th>i</th><th>a</th><th>b</th><th>c = a + b</th><th>a vira</th><th>b vira</th></tr></thead>
+      <tbody>
+        <tr><td>2</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr><td>3</td><td>1</td><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+        <tr><td>4</td><td>1</td><td>2</td><td>3</td><td>2</td><td>3</td></tr>
+        <tr><td>5</td><td>2</td><td>3</td><td>5</td><td>3</td><td>5</td></tr>
+        <tr><td>6</td><td>3</td><td>5</td><td>8</td><td>5</td><td>8</td></tr>
+        <tr><td>7</td><td>5</td><td>8</td><td>13</td><td>8</td><td>13</td></tr>
+      </tbody>
+    </table>
+    <p>Resultado: <strong>fibLaco(7) = 13</strong>, com só 6 repetições e 3 variáveis. Bem mais simples que a árvore da recursiva.</p>
+
+    <h3>Quantas chamadas a recursiva faz (e por que isso preocupa)</h3>
+    <table class="trace-table">
+      <thead><tr><th>n</th><th>Chamadas = 2 × F(n+1) − 1</th><th>Tempo aproximado</th></tr></thead>
+      <tbody>
+        <tr><td>5</td><td>15</td><td>na hora</td></tr>
+        <tr><td>10</td><td>177</td><td>na hora</td></tr>
+        <tr><td>20</td><td>21.891</td><td>na hora</td></tr>
+        <tr><td>30</td><td>2.692.537</td><td>~0,05 segundos</td></tr>
+        <tr><td>40</td><td>331.160.281</td><td>~6 segundos</td></tr>
+        <tr><td>50</td><td>40.730.022.001</td><td>~13 minutos</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ O que a prova pergunta</span>
+      <ul>
+        <li><em>"Quantas vezes fib(2) é calculado dentro de fibRec(5)?"</em> → <strong>3 vezes</strong>. Só a árvore mostra a resposta.</li>
+        <li><em>"Qual a complexidade de tempo da recursiva?"</em> → <strong>O(2ⁿ)</strong> — cresce exponencialmente.</li>
+        <li><em>"E a complexidade de espaço?"</em> → <strong>O(n)</strong>, <em>não</em> O(2ⁿ). Este é o erro mais comum.</li>
+      </ul>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Fórmula pronta</span>
+      <p>Se a prova pedir o número de chamadas, use: <code>chamadas(n) = 2 × F(n+1) − 1</code>. Para n = 5: F(6) = 8, então 2 × 8 − 1 = 15. ✔</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge vermelho">Exemplo 4</span>
+    <h2>Fatorial que recusa números inválidos</h2>
+
+    <p>Boa prática: antes de calcular, checar se o número faz sentido. Se for negativo, avisa que é inválido.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+/* Devolve -1 se o número for inválido (negativo).
+   Devolve o fatorial se for válido. */
+int fatorialSeguro(int n) {
+    if (n &lt; 0) return -1;              /* número inválido */
+    if (n &lt;= 1) return 1;              /* caso base */
+    return n * fatorialSeguro(n - 1);  /* passo recursivo */
+}
+
+int main(void) {
+    int numeros[] = {0, 1, 5, 10, -3, 12};
+
+    for (int i = 0; i &lt; 6; i++) {
+        int r = fatorialSeguro(numeros[i]);
+        if (r == -1)
+            printf("fatorial(%d) -> número inválido!\n", numeros[i]);
+        else
+            printf("fatorial(%d) = %d\n", numeros[i], r);
+    }
+    return 0;
+}</code></pre>
+
+    <h4>Saída esperada</h4>
+    <div class="ascii">fatorial(0) = 1
+fatorial(1) = 1
+fatorial(5) = 120
+fatorial(10) = 3628800
+fatorial(-3) -> número inválido!
+fatorial(12) = 479001600</div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ O que a prova pergunta</span>
+      <ul>
+        <li><em>"Por que validar antes do caso base?"</em> → Porque se o caso base for <code>n == 0</code> e o número for -3, a função desce para sempre. Colocando a validação primeiro, isso não acontece.</li>
+        <li><em>"O que acontece com n = 13 em um int?"</em> → Estouro de memória (overflow). Um <code>int</code> só aguenta até <code>12!</code>. Depois disso, o resultado fica errado silenciosamente.</li>
+      </ul>
+    </div>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Guarde esses limites</span>
+      <p><code>int</code> → até 12!. <code>long long</code> → até 20!. Se a prova pedir fatorial acima disso, a resposta é "ocorre estouro".</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================ ABA 3 - CÓDIGO & PILHA ============================ -->
+<section id="codigo" class="tab-content">
+
+  <div class="card">
+    <span class="badge">Programa completo</span>
+    <h2>Um programa só com tudo que vimos</h2>
+    <p>Compile com: <code>gcc recursividade.c -o recursividade</code></p>
+
+<pre><code class="language-c">/* ============================================
+ * recursividade.c
+ * Todos os exemplos do guia em um só programa
+ * ============================================ */
+#include &lt;stdio.h&gt;
+
+/* ---- Contagem ---- */
+
+void regressiva(int n) {
+    if (n &lt; 1) return;
+    printf("%d ", n);
+    regressiva(n - 1);
+}
+
+void crescente(int n) {
+    if (n &lt; 1) return;
+    crescente(n - 1);
+    printf("%d ", n);
+}
+
+/* ---- Fatorial ---- */
+
+int fatorialLaco(int n) {
+    int r = 1;
+    for (int i = 2; i &lt;= n; i++) r = r * i;
+    return r;
+}
+
+int fatorialRec(int n) {
+    if (n &lt;= 1) return 1;
+    return n * fatorialRec(n - 1);
+}
+
+int fatorialSeguro(int n) {
+    if (n &lt; 0) return -1;
+    if (n &lt;= 1) return 1;
+    return n * fatorialSeguro(n - 1);
+}
+
+/* ---- Fibonacci ---- */
+
+int fibLaco(int n) {
+    if (n &lt;= 1) return n;
+    int a = 0, b = 1, c;
+    for (int i = 2; i &lt;= n; i++) {
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    return b;
+}
+
+int fibRec(int n) {
+    if (n &lt;= 1) return n;
+    return fibRec(n - 1) + fibRec(n - 2);
+}
+
+/* ---- Principal ---- */
+int main(void) {
+    printf("=== CONTAGEM ===\n");
+    printf("Regressiva: ");
+    regressiva(5);
+    printf("\nCrescente:  ");
+    crescente(5);
+    printf("\n\n");
+
+    printf("=== FATORIAL ===\n");
+    for (int i = 0; i &lt;= 10; i++) {
+        printf("%2d! laço=%-10d rec=%-10d\n",
+               i, fatorialLaco(i), fatorialRec(i));
+    }
+    printf("\n");
+
+    printf("=== FIBONACCI ===\n");
+    for (int i = 0; i &lt;= 12; i++) {
+        printf("F(%2d) laço=%-5d rec=%-5d\n",
+               i, fibLaco(i), fibRec(i));
+    }
+    printf("\n");
+
+    printf("=== FATORIAL COM VALIDAÇÃO ===\n");
+    int testes[] = {0, 1, 5, 10, -3, 12};
+    for (int i = 0; i &lt; 6; i++) {
+        int r = fatorialSeguro(testes[i]);
+        if (r == -1)
+            printf("fatorial(%3d) -> inválido\n", testes[i]);
+        else
+            printf("fatorial(%3d) = %d\n", testes[i], r);
+    }
+
+    return 0;
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Pilha de chamadas passo a passo — fatorialRec(4)</h2>
+    <p>Cada linha mostra um momento da execução. A coluna "Espera" mostra o que aquela caixinha ainda precisa fazer quando voltar.</p>
+
+    <table class="trace-table">
+      <thead>
+        <tr><th>Passo</th><th>O que acontece</th><th>Chamada</th><th>n</th><th>Espera</th><th>Volta com</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>entra</td><td>fatorialRec(4)</td><td>4</td><td><code>4 * ?</code></td><td>—</td></tr>
+        <tr><td>2</td><td>entra</td><td>fatorialRec(3)</td><td>3</td><td><code>3 * ?</code></td><td>—</td></tr>
+        <tr><td>3</td><td>entra</td><td>fatorialRec(2)</td><td>2</td><td><code>2 * ?</code></td><td>—</td></tr>
+        <tr><td>4</td><td>entra</td><td>fatorialRec(1)</td><td>1</td><td><strong>caso base!</strong></td><td>1</td></tr>
+        <tr><td>5</td><td>sai</td><td>fatorialRec(2)</td><td>2</td><td><code>2 * 1</code></td><td>2</td></tr>
+        <tr><td>6</td><td>sai</td><td>fatorialRec(3)</td><td>3</td><td><code>3 * 2</code></td><td>6</td></tr>
+        <tr><td>7</td><td>sai</td><td>fatorialRec(4)</td><td>4</td><td><code>4 * 6</code></td><td><strong>24</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Como a pilha fica na hora do pico</h3>
+    <div class="ascii">PILHA NO AUGE (passo 4)                DEPOIS DE TUDO (passo 7)
+┌────────────────────────────┐          ┌────────────────────────────┐
+│ fatorialRec(1)   n = 1     │ ← topo   │  (vazia — main retoma)     │
+├────────────────────────────┤          └────────────────────────────┘
+│ fatorialRec(2)   n = 2     │
+├────────────────────────────┤          RESULTADO: 24
+│ fatorialRec(3)   n = 3     │
+├────────────────────────────┤
+│ fatorialRec(4)   n = 4     │ ← base
+├────────────────────────────┤
+│ main()                     │
+└────────────────────────────┘
+
+São 4 caixinhas da recursão + 1 do main = 5 no total</div>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 Entendendo a tabela</span>
+      <p>As caixinhas <strong>não somem</strong> durante a descida. Cada uma guarda o valor do seu <code>n</code> e o que ainda precisa calcular. Quando o caso base devolve 1, as caixinhas começam a sair de cima para baixo, cada uma completando sua multiplicação e passando o resultado para a de baixo.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Pilha de chamadas — fibRec(5)</h2>
+    <p>O traço abaixo segue a ordem em que as coisas realmente acontecem (esquerda primeiro).</p>
+
+    <table class="trace-table">
+      <thead>
+        <tr><th>Ordem</th><th>Chamada</th><th>Nível</th><th>Volta com</th><th>Observação</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>fib(5)</td><td>1</td><td>—</td><td>precisa de fib(4) + fib(3)</td></tr>
+        <tr><td>2</td><td>fib(4)</td><td>2</td><td>—</td><td>precisa de fib(3) + fib(2)</td></tr>
+        <tr><td>3</td><td>fib(3)</td><td>3</td><td>—</td><td>precisa de fib(2) + fib(1)</td></tr>
+        <tr><td>4</td><td>fib(2)</td><td>4</td><td>—</td><td>precisa de fib(1) + fib(0)</td></tr>
+        <tr><td>5</td><td>fib(1)</td><td>5</td><td>1</td><td>caso base</td></tr>
+        <tr><td>6</td><td>fib(0)</td><td>5</td><td>0</td><td>caso base</td></tr>
+        <tr><td>7</td><td>fib(2) fecha</td><td>4</td><td><strong>1</strong></td><td>1 + 0 = 1</td></tr>
+        <tr><td>8</td><td>fib(1)</td><td>4</td><td>1</td><td>2ª vez</td></tr>
+        <tr><td>9</td><td>fib(3) fecha</td><td>3</td><td><strong>2</strong></td><td>1 + 1 = 2 — 1ª vez</td></tr>
+        <tr><td>10</td><td>fib(2)</td><td>3</td><td>—</td><td><strong>calculando fib(2) de novo</strong></td></tr>
+        <tr><td>11</td><td>fib(1)</td><td>4</td><td>1</td><td>3ª vez</td></tr>
+        <tr><td>12</td><td>fib(0)</td><td>4</td><td>0</td><td>2ª vez</td></tr>
+        <tr><td>13</td><td>fib(2) fecha</td><td>3</td><td><strong>1</strong></td><td>2ª vez</td></tr>
+        <tr><td>14</td><td>fib(4) fecha</td><td>2</td><td><strong>3</strong></td><td>2 + 1 = 3</td></tr>
+        <tr><td>15</td><td>fib(3)</td><td>2</td><td>—</td><td><strong>calculando fib(3) de novo</strong></td></tr>
+        <tr><td>16</td><td>fib(2)</td><td>3</td><td>—</td><td>3ª vez</td></tr>
+        <tr><td>17</td><td>fib(1)</td><td>4</td><td>1</td><td>4ª vez</td></tr>
+        <tr><td>18</td><td>fib(0)</td><td>4</td><td>0</td><td>3ª vez</td></tr>
+        <tr><td>19</td><td>fib(2) fecha</td><td>3</td><td><strong>1</strong></td><td>3ª vez</td></tr>
+        <tr><td>20</td><td>fib(1)</td><td>3</td><td>1</td><td>5ª vez</td></tr>
+        <tr><td>21</td><td>fib(3) fecha</td><td>2</td><td><strong>2</strong></td><td>2ª vez</td></tr>
+        <tr><td>22</td><td>fib(5) fecha</td><td>1</td><td><strong>5</strong></td><td>3 + 2 = 5</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-conceito">
+      <span class="box-title">📘 O que dá para ver</span>
+      <ul>
+        <li>Foram <strong>15 chamadas de função</strong> só para achar um número que o laço acha em 4 passos.</li>
+        <li><code>fib(2)</code> foi calculado <strong>3 vezes</strong>, <code>fib(3)</code> <strong>2 vezes</strong>. Esse desperdício cresce exponencialmente.</li>
+        <li>A pilha chegou no máximo ao <strong>nível 5</strong>. Ou seja, memória é <strong>O(n)</strong>, não O(2ⁿ).</li>
+      </ul>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="box-title">⚠️ Fique atento</span>
+      <p>Quem diz que a memória da recursiva de Fibonacci é O(2ⁿ) está confundindo <em>número total de chamadas</em> com <em>chamadas ao mesmo tempo</em>. A pilha só mantém aberto o caminho atual — os galhos que já terminaram somem.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Comparando o uso de memória</h2>
+    <table>
+      <thead><tr><th>Função</th><th>Profundidade máxima (n = 5)</th><th>Caixinhas ao mesmo tempo</th><th>Memória</th></tr></thead>
+      <tbody>
+        <tr><td><code>regressiva(5)</code></td><td>6 (5 até 0)</td><td>6</td><td>O(n)</td></tr>
+        <tr><td><code>crescente(5)</code></td><td>6 (5 até 0)</td><td>6</td><td>O(n)</td></tr>
+        <tr><td><code>fatorialRec(5)</code></td><td>5</td><td>5</td><td>O(n)</td></tr>
+        <tr><td><code>fibRec(5)</code></td><td>5</td><td>5</td><td>O(n) — apesar das 15 chamadas no total</td></tr>
+        <tr><td><code>fibLaco(5)</code></td><td>1</td><td>1</td><td><strong>O(1)</strong></td></tr>
+        <tr><td><code>fatorialLaco(5)</code></td><td>1</td><td>1</td><td><strong>O(1)</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<!-- ============================ ABA 4 - COMPARAÇÕES ============================ -->
+<section id="comparacoes" class="tab-content">
+
+  <div class="card">
+    <span class="badge">Tabela grande</span>
+    <h2>Recursão x Laço — lado a lado</h2>
+    <table>
+      <thead>
+        <tr><th>Critério</th><th>Com laço (for/while)</th><th>Com recursão</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tempo no fatorial</strong></td>
+          <td>O(n)</td>
+          <td>O(n) — igual, só com custo extra de chamar função</td>
+        </tr>
+        <tr>
+          <td><strong>Tempo no Fibonacci</strong></td>
+          <td><strong>O(n)</strong></td>
+          <td><strong>O(2ⁿ)</strong> — bem mais devagar</td>
+        </tr>
+        <tr>
+          <td><strong>Memória</strong></td>
+          <td><strong>O(1)</strong> — só umas duas variáveis</td>
+          <td>O(n) — uma caixinha por nível</td>
+        </tr>
+        <tr>
+          <td><strong>Espaço usado</strong></td>
+          <td>Pouquíssimo</td>
+          <td>Mais: cada caixinha repete parâmetros e endereços</td>
+        </tr>
+        <tr>
+          <td><strong>Facilidade de ler</strong></td>
+          <td>Boa para coisas simples e sequenciais</td>
+          <td><strong>Ótima</strong> quando o problema já é recursivo (árvores)</td>
+        </tr>
+        <tr>
+          <td><strong>Parece com a fórmula da matemática?</strong></td>
+          <td>Não muito</td>
+          <td><strong>Sim</strong> — o código quase copia a fórmula</td>
+        </tr>
+        <tr>
+          <td><strong>Chance de errar</strong></td>
+          <td>Baixa</td>
+          <td>Alta: esquecer caso base, ir para o lado errado, etc.</td>
+        </tr>
+        <tr>
+          <td><strong>Risco de travar (Stack Overflow)</strong></td>
+          <td>Nenhum</td>
+          <td><strong>Existe</strong> — quanto mais fundo, maior o risco</td>
+        </tr>
+        <tr>
+          <td><strong>Depurar (achar erro)</strong></td>
+          <td>Fácil</td>
+          <td>Difícil: tem várias caixinhas abertas ao mesmo tempo</td>
+        </tr>
+        <tr>
+          <td><strong>Combina com</strong></td>
+          <td>Vetores, listas, filas, pilhas</td>
+          <td>Árvores, grafos, listas encadeadas</td>
+        </tr>
+        <tr>
+          <td><strong>Custo de chamar função</strong></td>
+          <td>Não tem</td>
+          <td>Tem: cada nível empilha e desempilha</td>
+        </tr>
+        <tr>
+          <td><strong>Limite de entrada</strong></td>
+          <td>Só o tempo do computador</td>
+          <td>Limitado pelo tamanho da <strong>pilha</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <span class="badge verde">Complexidades</span>
+    <h2>Tabela de tempo e memória</h2>
+    <table>
+      <thead>
+        <tr><th>Algoritmo</th><th>Forma</th><th>Tempo</th><th>Memória</th><th>Observação</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="2">Fatorial</td><td>Com laço</td><td>O(n)</td><td><strong>O(1)</strong></td><td>Melhor no dia a dia</td></tr>
+        <tr><td>Recursiva</td><td>O(n)</td><td>O(n)</td><td>Boa para aprender</td></tr>
+        <tr><td rowspan="3">Fibonacci</td><td>Com laço</td><td>O(n)</td><td><strong>O(1)</strong></td><td>Só 3 variáveis</td></tr>
+        <tr><td>Recursiva simples</td><td><strong>O(2ⁿ)</strong></td><td>O(n)</td><td>Impraticável acima de n = 40</td></tr>
+        <tr><td>Recursiva guardando resultados</td><td>O(n)</td><td>O(n)</td><td>Guarda o que já calculou</td></tr>
+        <tr><td rowspan="2">Contagem (1..n)</td><td>Com laço</td><td>O(n)</td><td>O(1)</td><td>Bem simples</td></tr>
+        <tr><td>Recursiva</td><td>O(n)</td><td>O(n)</td><td>Serve para mostrar ida/volta</td></tr>
+        <tr><td rowspan="2">Busca binária</td><td>Com laço</td><td>O(log n)</td><td>O(1)</td><td>Preferível</td></tr>
+        <tr><td>Recursiva</td><td>O(log n)</td><td>O(log n)</td><td>Profundidade pequena — segura</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <span class="badge roxo">Decisão rápida</span>
+    <h2>Como escolher em 5 perguntas</h2>
+    <table>
+      <thead><tr><th>Pergunta</th><th>Se SIM</th><th>Se NÃO</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>A estrutura é uma árvore ou grafo?</td>
+          <td>→ Use <strong>recursão</strong>. Fazer com laço é bem mais complicado.</td>
+          <td>→ Continue avaliando.</td>
+        </tr>
+        <tr>
+          <td>A profundidade vai ser pequena (menos de milhares)?</td>
+          <td>→ <strong>Recursão é segura.</strong></td>
+          <td>→ Use <strong>laço</strong>, ou a pilha vai estourar.</td>
+        </tr>
+        <tr>
+          <td>Está recalculando as mesmas coisas?</td>
+          <td>→ Use <strong>laço ou guarde os resultados</strong>.</td>
+          <td>→ Recursão simples está OK.</td>
+        </tr>
+        <tr>
+          <td>Velocidade e memória são críticas?</td>
+          <td>→ Use <strong>laço</strong>.</td>
+          <td>→ Priorize a clareza: recursão.</td>
+        </tr>
+        <tr>
+          <td>A fórmula matemática já é recursiva?</td>
+          <td>→ <strong>Recursão</strong> deixa o código mais claro.</td>
+          <td>→ <strong>Laço</strong> provavelmente é mais direto.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<!-- ============================ ABA 5 - RESUMO ============================ -->
+<section id="resumo" class="tab-content">
+
+  <div class="card">
+    <span class="badge laranja">Véspera da prova</span>
+    <h2>Resumo — 10 coisas para lembrar</h2>
+
+    <ul>
+      <li><strong>1.</strong> Recursão é uma função que chama ela mesma para resolver um pedaço menor do problema.</li>
+
+      <li><strong>2.</strong> Toda recursão precisa de duas coisas: <em>caso base</em> (a hora de parar) e <em>passo recursivo</em> (a chamada para ela mesma com um problema menor).</li>
+
+      <li><strong>3.</strong> Não basta ter caso base — cada chamada precisa <em>chegar mais perto</em> dele. Se for se afastando, trava com <strong>estouro da pilha</strong>.</li>
+
+      <li><strong>4.</strong> A pilha funciona como pilha de pratos: <em>o último a entrar é o primeiro a sair</em>.</li>
+
+      <li><strong>5.</strong> Existem duas fases: <em>ida</em> (empilhando até o caso base) e <em>volta</em> (desempilhando e devolvendo resultados).</li>
+
+      <li><strong>6.</strong> Onde você coloca o <code>printf</code> muda tudo: antes da chamada imprime na ida (5 4 3 2 1); depois da chamada imprime na volta (1 2 3 4 5).</li>
+
+      <li><strong>7.</strong> Fatorial recursivo: tempo <strong>O(n)</strong>, memória <strong>O(n)</strong>. A versão com laço é O(n) tempo e <strong>O(1)</strong> memória.</li>
+
+      <li><strong>8.</strong> Fibonacci recursivo simples: tempo <strong>O(2ⁿ)</strong>, memória <strong>O(n)</strong>. Para fib(5) são <strong>15 chamadas</strong>, com fib(3) sendo calculado 2 vezes e fib(2) 3 vezes. Com laço fica O(n) tempo e O(1) memória.</li>
+
+      <li><strong>9.</strong> Quatro erros clássicos: (a) esquecer o caso base; (b) chamar com o mesmo valor; (c) ir para o lado errado do caso base; (d) não validar números negativos.</li>
+
+      <li><strong>10.</strong> Use <em>recursão</em> com árvores, grafos, fórmulas recursivas e profundidade pequena. Use <em>laço</em> para tarefas simples, com pouca memória, muito cálculo ou quando há cálculos repetidos. <strong>Toda recursão pode virar laço, e todo laço pode virar recursão.</strong></li>
+    </ul>
+
+    <div class="box-dica">
+      <span class="box-title">💡 Última dica</span>
+      <p>Se a questão pedir a <strong>saída de um programa</strong>, simule a pilha no papel. Se pedir <strong>complexidade</strong>, separe sempre <em>tempo</em> (quantas chamadas no total) de <em>memória</em> (quantas caixinhas ao mesmo tempo). Se pedir para <strong>verificar se está certa</strong>, use o teste dos 3 P: Parada, Progresso, Pequeno.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================ ABA 6 - QUIZ ============================ -->
+<section id="quiz" class="tab-content">
+
+  <div class="card">
+    <span class="badge verde">Teste interativo</span>
+    <h2>Quiz — 5 questões</h2>
+    <p>Clique em uma alternativa para ver a resposta comentada. Depois de responder, as opções travam. Atenção: <strong>3 das 5 questões têm pegadinha</strong>.</p>
+
+    <!-- QUESTÃO 1 -->
+    <div class="quiz-block">
+      <p class="quiz-q">Questão 1 — Qual a saída do programa abaixo?<span class="quiz-tag">Pegadinha</span></p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void f(int n) {
+    if (n &lt; 0) return;
+    printf("%d ", n);
+    f(n - 1);
+}
+
+int main(void) {
+    f(3);
+    return 0;
+}</code></pre>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-correct="false">A) 3 2 1</button>
+        <button class="quiz-opt" data-correct="true">B) 3 2 1 0</button>
+        <button class="quiz-opt" data-correct="false">C) 0 1 2 3</button>
+        <button class="quiz-opt" data-correct="false">D) 1 2 3</button>
+      </div>
+      <div class="feedback">
+        <strong>Passo a passo:</strong><br>
+        A pegadinha está na condição: <code>if (n &lt; 0) return;</code> — e não <code>n &lt; 1</code>. Isso quer dizer que o número <code>0</code> <em>ainda é impresso</em>.<br><br>
+        <strong>Execução:</strong><br>
+        1. <code>f(3)</code> → 3 não é menor que 0 → imprime <strong>3</strong> → chama f(2)<br>
+        2. <code>f(2)</code> → imprime <strong>2</strong> → chama f(1)<br>
+        3. <code>f(1)</code> → imprime <strong>1</strong> → chama f(0)<br>
+        4. <code>f(0)</code> → 0 também não é menor que 0 → imprime <strong>0</strong> → chama f(-1)<br>
+        5. <code>f(-1)</code> → −1 é menor que 0 → <strong>para</strong><br><br>
+        <strong>Saída: 3 2 1 0</strong> — alternativa B. Como o <code>printf</code> vem antes da chamada, tudo sai na ida.
+      </div>
+    </div>
+
+    <!-- QUESTÃO 2 -->
+    <div class="quiz-block">
+      <p class="quiz-q">Questão 2 — Verdadeiro ou falso: "Toda função recursiva que tem caso base escrito termina sozinha."<span class="quiz-tag">Pegadinha</span></p>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-correct="false">A) Verdadeiro — o caso base já garante que a função vai parar.</button>
+        <button class="quiz-opt" data-correct="true">B) Falso — o caso base precisa ser alcançável pelas chamadas.</button>
+        <button class="quiz-opt" data-correct="false">C) Verdadeiro — o compilador de C arruma recursão infinita.</button>
+        <button class="quiz-opt" data-correct="false">D) Falso — funções recursivas nunca param.</button>
+      </div>
+      <div class="feedback">
+        <strong>Passo a passo:</strong><br>
+        A afirmação é <strong>FALSA</strong>. Ter caso base <em>não basta</em> — ele tem que ser <strong>alcançável</strong>.<br><br>
+        <strong>Contraexemplo:</strong> <code>int f(int n) { if (n == 0) return 0; return f(n + 1); }</code><br>
+        Aqui o caso base existe (n == 0), mas a chamada <em>aumenta</em> o n. Se começar em <code>f(5)</code>, os números vão 5, 6, 7, 8... — cada vez mais longe do 0. Nunca chega no caso base → <strong>estouro da pilha</strong>.<br><br>
+        A alternativa C também é falsa: o compilador de C <em>não</em> detecta recursão infinita (isso é impossível de resolver de forma geral — é o famoso "Problema da Parada"). A D é absurda. Resposta correta: <strong>B</strong>.
+      </div>
+    </div>
+
+    <!-- QUESTÃO 3 -->
+    <div class="quiz-block">
+      <p class="quiz-q">Questão 3 — Na recursiva simples de Fibonacci, quantas vezes <code>fib(2)</code> é chamado durante o cálculo de <code>fib(5)</code>?<span class="quiz-tag">Pegadinha</span></p>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-correct="false">A) 1 vez</button>
+        <button class="quiz-opt" data-correct="false">B) 2 vezes</button>
+        <button class="quiz-opt" data-correct="true">C) 3 vezes</button>
+        <button class="quiz-opt" data-correct="false">D) 5 vezes</button>
+      </div>
+      <div class="feedback">
+        <strong>Passo a passo:</strong> A resposta é <strong>3 vezes</strong>. Montando a árvore de fib(5):<br><br>
+        <code>fib(5) = fib(4) + fib(3)</code><br>
+        &nbsp;&nbsp;<code>fib(4) = fib(3) + fib(2)</code> ← <strong>fib(2) nº 1</strong><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>fib(3) = fib(2) + fib(1)</code> ← <strong>fib(2) nº 2</strong><br>
+        &nbsp;&nbsp;<code>fib(3) = fib(2) + fib(1)</code> ← <strong>fib(2) nº 3</strong><br><br>
+        Contando todos: F(3) aparece 2 vezes, F(2) aparece <strong>3 vezes</strong>, F(1) aparece 5 vezes, F(0) aparece 3 vezes. Total de chamadas: <strong>15</strong>.<br><br>
+        <strong>Por que a alternativa D (5 vezes) engana?</strong> Porque F(1) é mesmo calculado 5 vezes. Mas a pergunta é sobre <code>fib(2)</code>. Leia sempre com atenção qual número estão pedindo.<br><br>
+        <strong>Fórmula de conferência:</strong> 2 × F(6) − 1 = 2 × 8 − 1 = 15. ✔
+      </div>
+    </div>
+
+    <!-- QUESTÃO 4 -->
+    <div class="quiz-block">
+      <p class="quiz-q">Questão 4 — Qual a memória usada pela versão recursiva do fatorial (<code>int fat(int n) { if (n &lt;= 1) return 1; return n * fat(n - 1); }</code>)?</p>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-correct="false">A) O(1) — só tem uma variável, o <code>n</code>.</button>
+        <button class="quiz-opt" data-correct="true">B) O(n) — porque são abertas n caixinhas na pilha ao mesmo tempo.</button>
+        <button class="quiz-opt" data-correct="false">C) O(n²) — cada caixinha guarda o resultado.</button>
+        <button class="quiz-opt" data-correct="false">D) O(2ⁿ) — o número de chamadas cresce exponencialmente.</button>
+      </div>
+      <div class="feedback">
+        <strong>Passo a passo:</strong> A resposta é <strong>B) O(n)</strong>.<br><br>
+        Apesar do código ter só uma variável (<code>n</code>), cada <em>chamada</em> abre uma caixinha própria na pilha, com seu próprio valor de <code>n</code> e o endereço de retorno. Como as caixinhas ficam abertas ao mesmo tempo durante a descida, e a profundidade máxima é n, a memória é proporcional a n.<br><br>
+        <strong>Por que A engana?</strong> É o erro mais comum: confundir "quantas variáveis tem no código" com "quantas variáveis estão vivas na execução". No código tem 1; na execução tem n cópias.<br><br>
+        <strong>Por que D está errada?</strong> O(2ⁿ) é a complexidade de <em>tempo</em> do Fibonacci recursivo, não a memória do fatorial. Não misture os dois.<br><br>
+        <strong>Comparando:</strong> a versão com laço usa O(1) de memória, porque reaproveita as mesmas variáveis toda vez.
+      </div>
+    </div>
+
+    <!-- QUESTÃO 5 -->
+    <div class="quiz-block">
+      <p class="quiz-q">Questão 5 — Sobre a pilha de chamadas, qual alternativa está CERTA?</p>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-correct="false">A) Ela funciona como fila: o primeiro a entrar é o primeiro a sair.</button>
+        <button class="quiz-opt" data-correct="false">B) Todas as chamadas compartilham a mesma caixinha para economizar memória.</button>
+        <button class="quiz-opt" data-correct="true">C) Ela funciona como pilha de pratos: o último a entrar é o primeiro a sair.</button>
+        <button class="quiz-opt" data-correct="false">D) O estouro da pilha só acontece quando falta o caso base.</button>
+      </div>
+      <div class="feedback">
+        <strong>Passo a passo:</strong> A resposta é <strong>C</strong>.<br><br>
+        <strong>Por que C está certa?</strong> A pilha de chamadas funciona no sistema <strong>LIFO</strong> ("o último a entrar é o primeiro a sair"). Quando chega no caso base, a chamada do topo retorna primeiro. É por isso que um <code>printf</code> depois da chamada imprime em ordem crescente.<br><br>
+        <strong>Por que A está errada?</strong> Fila é FIFO (o primeiro a entrar sai primeiro). Isso não é o que acontece com funções.<br><br>
+        <strong>Por que B está errada?</strong> Cada chamada tem uma caixinha <strong>independente</strong>. É exatamente isso que permite cada nível ter seu próprio valor de <code>n</code>. Se fosse a mesma, a recursão não funcionaria.<br><br>
+        <strong>Por que D está errada?</strong> O estouro também acontece com recursão correta, se ela for muito funda. Por exemplo, <code>fatorialRec(500000)</code> estoura a pilha mesmo tendo caso base certo.
+      </div>
+    </div>
+
+  </div>
+
+</section>
+</main>
+
+<p class="footer-note">Guia Fácil de Recursividade em C · Material para Análise e Desenvolvimento de Sistemas</p>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* Navegação entre abas */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var tabContents = document.querySelectorAll('.tab-content');
+
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var alvo = btn.getAttribute('data-tab');
+
+      tabBtns.forEach(function (b) { b.classList.remove('active'); });
+      tabContents.forEach(function (c) { c.classList.remove('active'); });
+
+      btn.classList.add('active');
+      var destino = document.getElementById(alvo);
+      if (destino) { destino.classList.add('active'); }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  /* Quiz */
+  var opcoes = document.querySelectorAll('.quiz-opt');
+
+  opcoes.forEach(function (opcao) {
+    opcao.addEventListener('click', function () {
+
+      var bloco = opcao.closest('.quiz-block');
+      if (!bloco) { return; }
+      if (bloco.getAttribute('data-respondido') === 'true') { return; }
+      bloco.setAttribute('data-respondido', 'true');
+
+      var todasOpcoes = bloco.querySelectorAll('.quiz-opt');
+      var feedback = bloco.querySelector('.feedback');
+      var acertou = opcao.getAttribute('data-correct') === 'true';
+
+      todasOpcoes.forEach(function (o) {
+        o.disabled = true;
+        o.style.cursor = 'default';
+        o.style.opacity = '0.75';
+      });
+
+      opcao.style.opacity = '1';
+      opcao.style.background = acertou ? 'var(--success-soft)' : 'var(--danger-soft)';
+      opcao.style.borderColor = acertou ? 'var(--success)' : 'var(--danger)';
+      opcao.style.color = acertou ? 'var(--success)' : 'var(--danger)';
+      opcao.style.fontWeight = '700';
+
+      todasOpcoes.forEach(function (o) {
+        if (o.getAttribute('data-correct') === 'true') {
+          o.style.opacity = '1';
+          o.style.borderColor = 'var(--success)';
+          o.style.background = 'var(--success-soft)';
+        }
+      });
+
+      if (feedback) {
+        var selo = acertou
+          ? '<strong>✅ Acertou!</strong><br><br>'
+          : '<strong>❌ Não foi essa.</strong> A resposta certa está em verde.<br><br>';
+        feedback.innerHTML = selo + feedback.innerHTML;
+        feedback.classList.add(acertou ? 'correct' : 'incorrect');
+        feedback.style.display = 'block';
+      }
+    });
+  });
+
+  /* Realce de sintaxe */
+  if (typeof hljs !== 'undefined') {
+    hljs.highlightAll();
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Definitivo de Estrutura de Dados: Alocação de Memória e TAD em C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --accent: #4F46E5;
+  --accent-soft: #EEF2FF;
+  --accent-2: #7C3AED;
+  --accent-2-soft: #F5F3FF;
+  --success: #059669;
+  --success-soft: #ECFDF5;
+  --warning: #D97706;
+  --warning-soft: #FFFBEB;
+  --danger: #DC2626;
+  --danger-soft: #FEF2F2;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --border-soft: #F3F4F6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 24px 16px; font-size: 16px; max-width: 1100px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { color: var(--accent); font-size: 2.2rem; margin-bottom: 6px; font-weight: 700; }
+.header p { color: var(--muted); font-size: 1rem; font-weight: 500; }
+
+.nav-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: var(--card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s ease; font-family: inherit; font-size: 0.95rem; }
+.tab-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 20px; }
+
+.box-conceito  { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-analogia  { border-left: 4px solid var(--accent-2); background: var(--accent-2-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-pegadinha { border-left: 4px solid var(--danger); background: var(--danger-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-dica      { border-left: 4px solid var(--success); background: var(--success-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 8px; overflow: hidden; }
+th, td { border: 1px solid var(--border); padding: 12px 14px; text-align: left; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+
+pre { background: #0F172A; color: #F8FAFC; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 0.9rem; margin: 12px 0; }
+code { font-family: 'Fira Code', Consolas, monospace; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.quiz-opt { background: var(--border-soft); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; font-family: inherit; color: var(--text); }
+.quiz-opt:hover { background: var(--accent-soft); border-color: var(--accent); }
+.feedback { margin-top: 12px; padding: 14px; border-radius: 8px; display: none; font-size: 0.95rem; }
+.feedback.correct { background: var(--success-soft); color: var(--success); border: 1px solid var(--success); }
+.feedback.incorrect { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); }
+
+/* Complementos simples do guia */
+h2 { color: var(--accent); font-size: 1.5rem; margin-bottom: 12px; font-weight: 700; }
+h3 { color: var(--accent-2); font-size: 1.15rem; margin: 18px 0 8px; font-weight: 700; }
+h4 { color: var(--text); font-size: 1.02rem; margin: 14px 0 6px; font-weight: 700; }
+p { margin-bottom: 10px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 6px; }
+.box-conceito strong, .box-analogia strong, .box-pegadinha strong, .box-dica strong { display: block; margin-bottom: 4px; }
+.box-conceito { color: #312E81; }
+.box-analogia { color: #4C1D95; }
+.box-pegadinha { color: #7F1D1D; }
+.box-dica { color: #065F46; }
+.quiz-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+.quiz-question { font-weight: 700; margin-bottom: 6px; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-opt:disabled:hover { background: var(--border-soft); border-color: var(--border); }
+.tag { display: inline-block; background: var(--accent-soft); color: var(--accent); font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; letter-spacing: .3px; }
+.small { font-size: 0.88rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guia de Estudos · ADS - Alocação de Memória e TAD em C</h1>
+  <p>Guia Definitivo de Estrutura de Dados: Alocação de Memória e TAD em C</p>
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" data-tab="teoria">Teoria</button>
+  <button class="tab-btn" data-tab="exemplos">Exemplos</button>
+  <button class="tab-btn" data-tab="memoria">Código &amp; Memória</button>
+  <button class="tab-btn" data-tab="comparacoes">Comparações</button>
+  <button class="tab-btn" data-tab="resumo">Resumo</button>
+  <button class="tab-btn" data-tab="quiz">Quiz</button>
+</div>
+
+<!-- ======================= ABA 1: TEORIA ======================= -->
+<div class="tab-content active" id="teoria">
+
+  <div class="card">
+    <span class="tag">TÓPICO 1</span>
+    <h2>1. Fundamentos de Alocação de Memória</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito: o que é alocar memória?</strong>
+      Alocar memória é <em>reservar um espaço na gaveta do computador</em> para guardar dados enquanto o programa está rodando. Essa "gaveta" é a memória RAM. Quando você cria uma variável em C, o computador separa um pedacinho dessa memória só para ela e coloca uma "etiqueta" com o nome da variável.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia da gaveta</strong>
+      Imagine um armário cheio de gavetas vazias. Quando você escreve <code>int idade;</code>, é como se você pegasse uma gaveta pequena, colasse a etiqueta "idade" e dissesse: "essa gaveta é minha, vou guardar um número inteiro aqui". Quando o programa termina, as gavetas são devolvidas.
+    </div>
+
+    <p>Em C existem <strong>duas formas</strong> de conseguir essas gavetas: a <strong>alocação estática</strong> (tamanho fixo, decidido antes de rodar) e a <strong>alocação dinâmica</strong> (tamanho flexível, decidido enquanto o programa roda).</p>
+
+    <h3>1.1 Alocação Estática (tamanho fixo)</h3>
+    <p>Na alocação estática, o tamanho é escrito <strong>no próprio código</strong>, antes do programa rodar. Você já sabe quantos elementos vai precisar.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    int v[10];          /* vetor de 10 inteiros: tamanho FIXO, decidido aqui */
+    float nota;         /* uma variavel simples, tambem de tamanho fixo */
+    char nome[50];      /* espaco para 49 letras + o caractere final '\0' */
+
+    v[0] = 100;         /* posso usar normalmente */
+    printf("%d\n", v[0]);
+
+    return 0;
+}</code></pre>
+
+    <ul>
+      <li><strong>Quem decide o tamanho:</strong> o programador, na hora de escrever o código.</li>
+      <li><strong>Quem gerencia a memória:</strong> o próprio computador (compilador). Você não precisa fazer nada.</li>
+      <li><strong>Usa malloc() ou free()?</strong> Não. Nunca. Não é necessário.</li>
+      <li><strong>Onde fica:</strong> normalmente na <em>pilha (stack)</em>, uma área organizada e rápida.</li>
+    </ul>
+
+    <h4>Vantagens da alocação estática</h4>
+    <ul>
+      <li>É muito simples de escrever e de ler.</li>
+      <li>É rápida, porque o computador já reservou tudo antes de começar.</li>
+      <li>Não precisa de ponteiro nenhum.</li>
+      <li>Não precisa lembrar de liberar memória (nada de <code>free</code>).</li>
+    </ul>
+
+    <h4>Desvantagens da alocação estática</h4>
+    <ul>
+      <li>O tamanho não pode mudar durante a execução.</li>
+      <li>Se você colocar <code>int v[1000];</code> e usar só 5 posições, <strong>desperdiça</strong> memória.</li>
+      <li>Se você colocar <code>int v[10];</code> e o usuário quiser 50 números, <strong>falta espaço</strong> e o programa quebra.</li>
+    </ul>
+
+    <h3>1.2 Alocação Dinâmica (tamanho flexível)</h3>
+    <p>Na alocação dinâmica, o tamanho é decidido <strong>enquanto o programa está rodando</strong> — normalmente porque depende do que o usuário digitou.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;   /* obrigatorio para malloc, calloc, realloc e free */
+
+int main(void) {
+    int n;
+    int *v;           /* ponteiro: vai guardar o ENDERECO da gaveta reservada */
+
+    printf("Quantos numeros voce quer? ");
+    scanf("%d", &amp;n);  /* o tamanho so e conhecido AGORA, em tempo de execucao */
+
+    /* Pede ao computador um bloco com espaco para n inteiros */
+    v = (int *) malloc(n * sizeof(int));
+
+    if (v == NULL) {          /* teste de seguranca obrigatorio */
+        printf("Sem memoria!\n");
+        return 1;
+    }
+
+    v[0] = 42;                /* usa como se fosse um vetor normal */
+    printf("%d\n", v[0]);
+
+    free(v);                  /* devolve a memoria para o computador */
+    v = NULL;                 /* evita ponteiro solto */
+
+    return 0;
+}</code></pre>
+
+    <ul>
+      <li><strong>Quem decide o tamanho:</strong> o programa, na hora da execução (com base na digitação do usuário).</li>
+      <li><strong>Quem gerencia:</strong> o programador. Você pede com <code>malloc</code>/<code>calloc</code> e devolve com <code>free</code>.</li>
+      <li><strong>Onde fica:</strong> numa área chamada <em>monte (heap)</em>, que é maior e mais flexível que a pilha.</li>
+    </ul>
+
+    <h4>Vantagens da alocação dinâmica</h4>
+    <ul>
+      <li>O tamanho se adapta à necessidade real do programa.</li>
+      <li>Aproveita melhor a memória, sem desperdício.</li>
+      <li>Permite crescer ou diminuir depois, com <code>realloc</code>.</li>
+    </ul>
+
+    <h4>Desvantagens da alocação dinâmica</h4>
+    <ul>
+      <li>É mais complexa: exige ponteiros e atenção redobrada.</li>
+      <li>Se você esquecer o <code>free</code>, a memória fica presa até o programa fechar (vazamento).</li>
+      <li>Você precisa testar sempre se o ponteiro veio <code>NULL</code>.</li>
+    </ul>
+
+    <h3>1.3 Tabela comparativa simples: tamanho fixo vs tamanho flexível</h3>
+    <table>
+      <tr>
+        <th>Característica</th>
+        <th>Estática (tamanho fixo)</th>
+        <th>Dinâmica (tamanho flexível)</th>
+      </tr>
+      <tr>
+        <td>Quando o tamanho é decidido</td>
+        <td>Antes do programa rodar</td>
+        <td>Durante a execução</td>
+      </tr>
+      <tr>
+        <td>Exemplo em C</td>
+        <td><code>int v[10];</code></td>
+        <td><code>int *v = malloc(n * sizeof(int));</code></td>
+      </tr>
+      <tr>
+        <td>Precisa de ponteiro?</td>
+        <td>Não</td>
+        <td>Sim</td>
+      </tr>
+      <tr>
+        <td>Usa malloc/free?</td>
+        <td>Não</td>
+        <td>Sim</td>
+      </tr>
+      <tr>
+        <td>Pode mudar de tamanho depois?</td>
+        <td>Não</td>
+        <td>Sim, com <code>realloc</code></td>
+      </tr>
+      <tr>
+        <td>Quem libera a memória</td>
+        <td>O computador, automaticamente</td>
+        <td>O programador, com <code>free</code></td>
+      </tr>
+      <tr>
+        <td>Risco principal</td>
+        <td>Desperdiçar ou faltar espaço</td>
+        <td>Vazamento de memória e ponteiro solto</td>
+      </tr>
+    </table>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Se você já sabe o tamanho e ele nunca muda, use estática. Se o tamanho vem da digitação do usuário ou de um arquivo, use dinâmica. Essa frase resolve 90% das questões de prova.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">TÓPICO 2</span>
+    <h2>2. Operador sizeof e as Funções malloc() e calloc()</h2>
+
+    <div class="box-conceito">
+      <strong>O que é o sizeof?</strong>
+      <code>sizeof</code> é um operador que responde a pergunta: <em>"quantos bytes esse tipo (ou essa variável) ocupa na memória?"</em>. Ele é importante porque o tamanho dos tipos <strong>muda de computador para computador</strong>.
+    </div>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    printf("int    = %zu bytes\n", sizeof(int));
+    printf("float  = %zu bytes\n", sizeof(float));
+    printf("double = %zu bytes\n", sizeof(double));
+    printf("char   = %zu bytes\n", sizeof(char));
+
+    int v[5];
+    printf("vetor v = %zu bytes\n", sizeof(v));   /* 5 * sizeof(int) */
+
+    return 0;
+}</code></pre>
+
+    <div class="box-dica">
+      <strong>Por que usar %zu e não %d?</strong>
+      O <code>sizeof</code> devolve um número do tipo <code>size_t</code>, que é um inteiro sem sinal. O jeito certo de imprimir é com <code>%zu</code>. Usar <code>%d</code> pode gerar aviso do compilador.
+    </div>
+
+    <h4>Tamanhos mais comuns (podem variar)</h4>
+    <table>
+      <tr><th>Tipo</th><th>Tamanho típico</th><th>Guarda o quê</th></tr>
+      <tr><td><code>char</code></td><td>1 byte</td><td>Uma letra ou um número pequeno</td></tr>
+      <tr><td><code>int</code></td><td>4 bytes</td><td>Número inteiro</td></tr>
+      <tr><td><code>float</code></td><td>4 bytes</td><td>Número com casas decimais</td></tr>
+      <tr><td><code>double</code></td><td>8 bytes</td><td>Número decimal mais preciso</td></tr>
+    </table>
+
+    <h3>2.1 A função malloc() — Memory Allocation</h3>
+    <p>O nome vem do inglês <em>Memory Allocation</em> (alocação de memória). Ela reserva <strong>um bloco de memória do tamanho que você pedir</strong> e devolve o endereço desse bloco.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *p;
+
+    /* Quero espaco para 5 inteiros.
+       sizeof(int) diz quantos bytes tem 1 inteiro.
+       5 * sizeof(int) diz quantos bytes tem o bloco todo. */
+    p = (int *) malloc(5 * sizeof(int));
+
+    if (p == NULL) {              /* SEMPRE teste! */
+        printf("Falha ao alocar memoria.\n");
+        return 1;
+    }
+
+    /* ATENCAO: o conteudo aqui dentro e LIXO de memoria.
+       Sao valores desconhecidos, restos de outros programas. */
+    p[0] = 7;                     /* agora sim, guardamos algo nosso */
+    printf("%d\n", p[0]);
+
+    free(p);
+    p = NULL;
+    return 0;
+}</code></pre>
+
+    <ul>
+      <li><strong>O que recebe:</strong> a quantidade de bytes que você quer.</li>
+      <li><strong>O que devolve:</strong> o endereço inicial do bloco, ou <code>NULL</code> se não conseguiu.</li>
+      <li><strong>O que tem dentro:</strong> <em>lixo de memória</em> — valores indeterminados, nunca confie neles.</li>
+    </ul>
+
+    <h3>2.2 A função calloc() — Contiguous Allocation</h3>
+    <p>O nome vem de <em>Contiguous Allocation</em> (alocação contígua). Ela reserva espaço para <strong>N elementos</strong> e, de brinde, <strong>limpa tudo colocando ZERO em cada byte</strong>.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *p;
+
+    /* calloc(quantidade, tamanho de cada um) */
+    p = (int *) calloc(5, sizeof(int));
+
+    if (p == NULL) {
+        printf("Falha ao alocar memoria.\n");
+        return 1;
+    }
+
+    /* Todos os valores ja estao ZERADOS */
+    printf("%d %d %d %d %d\n", p[0], p[1], p[2], p[3], p[4]);
+
+    free(p);
+    p = NULL;
+    return 0;
+}</code></pre>
+
+    <h3>2.3 Diferença essencial entre malloc() e calloc()</h3>
+    <table>
+      <tr><th>Aspecto</th><th>malloc()</th><th>calloc()</th></tr>
+      <tr><td>Como se chama</td><td><code>malloc(tamanho_em_bytes)</code></td><td><code>calloc(quantidade, tamanho_de_cada)</code></td></tr>
+      <tr><td>Quantos parâmetros</td><td>1</td><td>2</td></tr>
+      <tr><td>Conteúdo inicial</td><td>Lixo de memória (indeterminado)</td><td>Tudo zerado</td></tr>
+      <tr><td>Velocidade</td><td>Um pouco mais rápida</td><td>Um pouco mais lenta (precisa zerar)</td></tr>
+      <tr><td>Quando usar</td><td>Quando você vai preencher tudo logo</td><td>Quando precisa começar do zero (contadores, somas)</td></tr>
+    </table>
+
+    <div class="box-analogia">
+      <strong>Analogia do quarto de hotel</strong>
+      <code>malloc</code> é como receber um quarto de hotel que <strong>ainda não foi arrumado</strong>: tem coisas do hóspede anterior lá dentro. <code>calloc</code> é receber o quarto <strong>limpo e arrumado</strong>: tudo no lugar, tudo zerado. Os dois quartos são do mesmo tamanho — a diferença é a arrumação inicial.
+    </div>
+
+    <h3>2.4 Teste Obrigatório de Segurança</h3>
+    <p>A memória do computador é limitada. Se você pedir um bloco gigante, o sistema pode dizer "não tenho". Quando isso acontece, <code>malloc</code> e <code>calloc</code> devolvem <code>NULL</code> — que significa "ponteiro para lugar nenhum".</p>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha clássica de prova</strong>
+      Usar a memória sem testar se o ponteiro é <code>NULL</code>. Se você fizer <code>p[0] = 10;</code> com <code>p</code> valendo <code>NULL</code>, o programa <strong>trava na hora</strong> (erro de segmentação). O teste abaixo é obrigatório:
+    </div>
+
+<pre><code class="language-c">p = (int *) malloc(n * sizeof(int));
+
+if (p == NULL) {          /* se veio NULL, NAO use a memoria */
+    printf("Erro: memoria insuficiente.\n");
+    return 1;             /* sai do programa com codigo de erro */
+}
+
+/* so daqui para baixo e seguro usar p */
+p[0] = 10;</code></pre>
+  </div>
+
+  <div class="card">
+    <span class="tag">TÓPICO 3</span>
+    <h2>3. Redimensionando e Liberando Memória</h2>
+
+    <h3>3.1 realloc() — mudar o tamanho de um bloco que já existe</h3>
+    <p><code>realloc</code> vem de <em>reallocation</em> (realocação). Serve para dizer: "eu tinha um bloco de 5 inteiros, agora quero um de 10".</p>
+
+    <div class="box-conceito">
+      <strong>Como usar com segurança</strong>
+      Nunca escreva <code>v = realloc(v, novo_tamanho);</code>. Se o <code>realloc</code> falhar, ele devolve <code>NULL</code> e você <strong>perde o endereço antigo</strong> que estava em <code>v</code> — a memória antiga fica perdida para sempre. Use sempre um <strong>ponteiro temporário</strong>.
+    </div>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *v;
+    int *temp;   /* ponteiro TEMPORARIO: guarda o resultado antes de confirmar */
+
+    v = (int *) malloc(5 * sizeof(int));
+    if (v == NULL) return 1;
+
+    v[0] = 1;
+    v[1] = 2;
+
+    /* Quero aumentar de 5 para 10 posicoes */
+    temp = (int *) realloc(v, 10 * sizeof(int));
+
+    if (temp == NULL) {
+        /* Deu errado! O bloco antigo (v) continua valido.
+           Nao perdi nada. Posso continuar usando v com 5 posicoes. */
+        printf("Nao consegui aumentar. Mantendo as 5 posicoes.\n");
+        free(v);
+        v = NULL;
+        return 1;
+    }
+
+    v = temp;    /* agora sim: v aponta para o bloco maior */
+
+    v[9] = 999;
+    printf("%d\n", v[9]);
+
+    free(v);
+    v = NULL;
+    return 0;
+}</code></pre>
+
+    <h4>O que o realloc faz por dentro (versão simples)</h4>
+    <ol>
+      <li>Se der, ele <strong>estica</strong> o bloco no mesmo lugar — os dados antigos ficam onde estão.</li>
+      <li>Se não der, ele <strong>procura outro lugar</strong>, copia os dados antigos para lá e libera o bloco velho automaticamente.</li>
+      <li>Se não conseguir de jeito nenhum, devolve <code>NULL</code> e <strong>não mexe</strong> no bloco antigo.</li>
+    </ol>
+
+    <h3>3.2 free() — devolver a memória</h3>
+    <p><code>free</code> significa "liberar". É o comando que devolve o bloco para o computador, para que ele possa ser usado por outra parte do programa.</p>
+
+<pre><code class="language-c">free(v);      /* devolve o bloco alocado com malloc/calloc/realloc */
+v = NULL;     /* boa pratica: deixa o ponteiro apontando para lugar nenhum */</code></pre>
+
+    <div class="box-dica">
+      <strong>Por que fazer v = NULL depois do free?</strong>
+      Porque o endereço antigo continua guardado dentro de <code>v</code>, mas aquele endereço <strong>não é mais seu</strong>. Se você usar <code>v</code> de novo por descuido, o programa pode fazer algo errado silenciosamente. Colocando <code>NULL</code>, qualquer uso indevido trava imediatamente e você descobre o erro rápido.
+    </div>
+
+    <h3>3.3 Cuidados e Pegadinhas de Prova</h3>
+
+    <div class="box-pegadinha">
+      <strong>Memory Leak (Vazamento de Memória)</strong>
+      Acontece quando você pede memória e <strong>esquece de devolver</strong> com <code>free</code>, ou quando perde o endereço guardado no ponteiro. O programa continua rodando, mas a memória vai ficando presa, presa, presa... até o computador ficar lento ou o programa ser encerrado.
+      <br><br>
+      <strong>Exemplo de vazamento por perda de endereço:</strong>
+<pre><code class="language-c">int *p = (int *) malloc(10 * sizeof(int));
+p = (int *) malloc(20 * sizeof(int));   /* ERRO! O primeiro bloco se perdeu */
+free(p);                                 /* so libera o segundo bloco */</code></pre>
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Dangling Pointer / Use After Free</strong>
+      "Ponteiro pendurado" é um ponteiro que ainda guarda um endereço, mas aquele endereço <strong>já foi liberado</strong>. Ler ou escrever ali é comportamento indefinido: pode funcionar, pode mostrar lixo, pode travar tudo.
+<pre><code class="language-c">int *p = (int *) malloc(sizeof(int));
+*p = 5;
+free(p);            /* memoria devolvida */
+printf("%d", *p);   /* ERRO! Lendo depois do free (use after free) */</code></pre>
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Double Free</strong>
+      Acontece quando você chama <code>free</code> duas vezes no mesmo bloco. O computador pode tentar liberar algo que já não é seu e o programa aborta.
+<pre><code class="language-c">int *p = (int *) malloc(sizeof(int));
+free(p);
+free(p);     /* ERRO! Ja liberei esse bloco uma vez */
+p = NULL;    /* se tivesse feito isso antes, o segundo free seria inofensivo */</code></pre>
+      Detalhe importante: <code>free(NULL)</code> é permitido e não faz nada. Por isso colocar <code>p = NULL</code> depois do free protege contra double free acidental.
+    </div>
+
+    <div class="box-dica">
+      <strong>Regra de ouro</strong>
+      Para cada <code>malloc</code> ou <code>calloc</code> que dá certo, deve existir exatamente <strong>um</strong> <code>free</code>. Nem zero, nem dois.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">TÓPICO 4</span>
+    <h2>4. Introdução a Tipo Abstrato de Dados (TAD)</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito simples</strong>
+      TAD = <strong>Dados</strong> (uma <code>struct</code>) + <strong>Operações permitidas</strong> (funções que mexem nesses dados). Ou seja: você junta as informações com as ações que fazem sentido sobre elas, e esconde os detalhes internos de quem vai usar.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia da calculadora</strong>
+      Você usa uma calculadora apertando os botões: soma, subtrai, divide. Você <strong>não precisa saber</strong> como os circuitos eletrônicos por dentro funcionam. Os botões são a "interface" e os circuitos são a "implementação". Isso é um TAD: você sabe <em>o que</em> a calculadora faz, mas não precisa saber <em>como</em> ela faz.
+    </div>
+
+    <h3>4.1 Diferença entre Struct e TAD</h3>
+    <table>
+      <tr><th>Aspecto</th><th>Struct</th><th>TAD</th></tr>
+      <tr><td>O que junta</td><td>Apenas variáveis (dados)</td><td>Variáveis + funções que operam sobre elas</td></tr>
+      <tr><td>Tem comportamentos?</td><td>Não, só guarda informação</td><td>Sim, tem operações definidas</td></tr>
+      <tr><td>Quem mexe nos dados?</td><td>Qualquer parte do código, direto</td><td>Preferencialmente só as funções do TAD</td></tr>
+      <tr><td>Exemplo</td><td><code>struct { float x, y; } Ponto;</code></td><td><code>Ponto</code> + <code>criarPonto()</code> + <code>distancia()</code></td></tr>
+    </table>
+
+    <div class="box-conceito">
+      <strong>Resumindo em uma frase</strong>
+      A struct só <em>guarda</em>. O TAD <em>guarda e sabe fazer coisas</em>.
+    </div>
+
+    <h3>4.2 Benefícios do TAD</h3>
+    <ul>
+      <li><strong>Organização:</strong> cada coisa fica no seu lugar. O que é do aluno fica junto do aluno.</li>
+      <li><strong>Reuso:</strong> você cria o TAD Aluno uma vez e usa em vários programas diferentes.</li>
+      <li><strong>Manutenção fácil:</strong> se precisar mudar como a média é calculada, você mexe em <strong>um</strong> lugar só.</li>
+      <li><strong>Separação entre quem usa e quem implementa:</strong> quem usa só precisa saber que <code>calcularMedia(a)</code> devolve a média; não precisa ver a conta por dentro.</li>
+      <li><strong>Menos erro:</strong> ninguém sai mexendo nos dados de qualquer jeito; todos usam as funções certas.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <span class="tag">TÓPICO 5</span>
+    <h2>5. Estrutura de um TAD em Linguagem C</h2>
+
+    <p>Na prática, um TAD em C é dividido em <strong>3 arquivos</strong>, cada um com um papel bem claro.</p>
+
+    <h3>5.1 O arquivo .h (Interface)</h3>
+    <ul>
+      <li>Declara a <code>struct</code> (os dados).</li>
+      <li>Declara os <strong>protótipos</strong> das funções (só o cabeçalho, sem o corpo).</li>
+      <li>Usa o <strong>Header Guard</strong> para o arquivo não ser incluído duas vezes por engano.</li>
+    </ul>
+
+    <div class="box-conceito">
+      <strong>O que é Header Guard?</strong>
+      São três linhas mágicas: <code>#ifndef NOME_H</code>, <code>#define NOME_H</code> e <code>#endif</code>. Elas significam: "se NOME_H ainda não foi definido, defina agora e leia o conteúdo; se já foi, ignore tudo". Assim o arquivo nunca é lido duas vezes na mesma compilação.
+    </div>
+
+<pre><code class="language-c">/* ============ ponto.h ============ */
+#ifndef PONTO_H        /* se PONTO_H ainda nao foi definido... */
+#define PONTO_H        /* ...define agora e leia o que vem abaixo */
+
+/* Aqui mostramos O QUE o TAD faz, nao COMO ele faz. */
+
+typedef struct {
+    float x;
+    float y;
+} Ponto;
+
+/* Prototipos: so o cabecalho, terminando em ponto e virgula */
+Ponto criarPonto(float x, float y);
+float distancia(Ponto a, Ponto b);
+
+#endif                 /* fim do ifndef */</code></pre>
+
+    <h3>5.2 O arquivo .c (Implementação)</h3>
+    <ul>
+      <li>Contém o <strong>código real</strong> de cada função.</li>
+      <li>Começa incluindo o próprio <code>.h</code>.</li>
+    </ul>
+
+<pre><code class="language-c">/* ============ ponto.c ============ */
+#include "ponto.h"
+#include &lt;math.h&gt;    /* para usar sqrt (raiz quadrada) */
+
+Ponto criarPonto(float x, float y) {
+    Ponto p;        /* crio uma variavel do tipo Ponto */
+    p.x = x;        /* preencho o campo x */
+    p.y = y;        /* preencho o campo y */
+    return p;       /* devolvo o ponto pronto */
+}
+
+float distancia(Ponto a, Ponto b) {
+    float dx = a.x - b.x;       /* diferenca das coordenadas x */
+    float dy = a.y - b.y;       /* diferenca das coordenadas y */
+    return sqrt(dx * dx + dy * dy);   /* formula da distancia */
+}</code></pre>
+
+    <h3>5.3 O arquivo main.c (Uso / Cliente)</h3>
+    <ul>
+      <li>Chama as funções do TAD.</li>
+      <li><strong>Não precisa saber</strong> como elas funcionam por dentro.</li>
+      <li>Inclui apenas o <code>.h</code>.</li>
+    </ul>
+
+<pre><code class="language-c">/* ============ main.c ============ */
+#include &lt;stdio.h&gt;
+#include "ponto.h"     /* so o .h, nunca o .c! */
+
+int main(void) {
+    Ponto p1 = criarPonto(0, 0);   /* uso a funcao, sem ver a conta */
+    Ponto p2 = criarPonto(3, 4);
+
+    printf("Distancia entre os pontos = %.2f\n", distancia(p1, p2));
+
+    return 0;
+}</code></pre>
+
+    <div class="box-dica">
+      <strong>Como compilar os 3 arquivos juntos</strong>
+      <code>gcc main.c ponto.c -o programa -lm</code>
+      <br>
+      O <code>-lm</code> no final serve para ligar a biblioteca de matemática (por causa do <code>sqrt</code>). O <code>.h</code> não entra na lista porque ele é incluído automaticamente pelo <code>#include</code>.
+    </div>
+
+    <h3>5.4 Exemplo prático: TAD Aluno</h3>
+
+    <h4>Arquivo aluno.h (Interface)</h4>
+<pre><code class="language-c">/* ============ aluno.h ============ */
+#ifndef ALUNO_H
+#define ALUNO_H
+
+#define TAM_NOME 50     /* tamanho maximo do nome */
+
+typedef struct {
+    char nome[TAM_NOME];   /* texto com o nome do aluno */
+    float nota1;           /* primeira nota */
+    float nota2;           /* segunda nota */
+} Aluno;
+
+Aluno criarAluno(const char *nome, float nota1, float nota2);
+float calcularMedia(Aluno a);
+int verificarAprovacao(Aluno a);   /* 1 = aprovado, 0 = reprovado */
+
+#endif</code></pre>
+
+    <h4>Arquivo aluno.c (Implementação)</h4>
+<pre><code class="language-c">/* ============ aluno.c ============ */
+#include "aluno.h"
+#include &lt;string.h&gt;   /* para usar strcpy */
+
+Aluno criarAluno(const char *nome, float nota1, float nota2) {
+    Aluno a;                    /* crio a struct */
+    strcpy(a.nome, nome);       /* COPIO o texto (nao posso usar = em strings) */
+    a.nota1 = nota1;            /* guardo a primeira nota */
+    a.nota2 = nota2;            /* guardo a segunda nota */
+    return a;                   /* devolvo o aluno pronto */
+}
+
+float calcularMedia(Aluno a) {
+    return (a.nota1 + a.nota2) / 2.0;   /* media simples das duas notas */
+}
+
+int verificarAprovacao(Aluno a) {
+    if (calcularMedia(a) &gt;= 6.0) {      /* media maior ou igual a 6? */
+        return 1;                        /* sim: aprovado */
+    } else {
+        return 0;                        /* nao: reprovado */
+    }
+}</code></pre>
+
+    <h4>Arquivo main.c (Uso)</h4>
+<pre><code class="language-c">/* ============ main.c ============ */
+#include &lt;stdio.h&gt;
+#include "aluno.h"
+
+int main(void) {
+    Aluno a = criarAluno("Maria", 8.0, 6.0);   /* crio o aluno */
+
+    printf("Aluno: %s\n", a.nome);
+    printf("Media: %.2f\n", calcularMedia(a));
+
+    if (verificarAprovacao(a)) {               /* se devolveu 1 */
+        printf("Situacao: APROVADO\n");
+    } else {
+        printf("Situacao: REPROVADO\n");
+    }
+
+    return 0;
+}</code></pre>
+
+    <div class="box-analogia">
+      <strong>Por que essa divisão ajuda tanto?</strong>
+      É como um restaurante. O <code>.h</code> é o <strong>cardápio</strong> (o que você pode pedir). O <code>.c</code> é a <strong>cozinha</strong> (onde o prato é feito, e você não entra lá). O <code>main.c</code> é o <strong>cliente</strong> (só pede pelo cardápio). Se o cozinheiro mudar a receita, o cliente nem percebe — desde que o prato continue igual.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">TÓPICO 6</span>
+    <h2>6. Dicas para Prova e Exercícios Resolvidos</h2>
+
+    <h3>6.1 Resumo das principais pegadinhas de prova</h3>
+
+    <div class="box-pegadinha">
+      <strong>1. Esquecer o #include &lt;stdlib.h&gt;</strong>
+      Sem esse include, o compilador não conhece <code>malloc</code>, <code>calloc</code>, <code>realloc</code> nem <code>free</code>. Ele pode até compilar com aviso, mas o comportamento fica imprevisível.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>2. Esquecer o free()</strong>
+      Toda memória alocada com <code>malloc</code>/<code>calloc</code> precisa ser devolvida com <code>free</code>. Esquecer gera vazamento de memória.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>3. Tentar copiar string com = em vez de strcpy()</strong>
+      Em C, <code>a.nome = "Maria";</code> está <strong>errado</strong>. Vetor de char não aceita atribuição direta. O certo é <code>strcpy(a.nome, "Maria");</code> — e não esqueça o <code>#include &lt;string.h&gt;</code>.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>4. Não checar o retorno NULL</strong>
+      Depois de <code>malloc</code>, <code>calloc</code> ou <code>realloc</code>, <strong>sempre</strong> teste <code>if (p == NULL)</code>. É a pegadinha mais cobrada de todas.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>5. Fazer v = realloc(v, ...) sem ponteiro temporário</strong>
+      Se falhar, você perde o endereço antigo e cria um vazamento de memória.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>6. Usar a memória depois do free (use after free)</strong>
+      Depois de <code>free(p)</code>, o bloco não é mais seu. Coloque <code>p = NULL;</code> logo em seguida.
+    </div>
+
+    <div class="box-dica">
+      <strong>Checklist antes de entregar a prova</strong>
+      <ul>
+        <li>Incluí <code>&lt;stdio.h&gt;</code> e <code>&lt;stdlib.h&gt;</code>?</li>
+        <li>Testei <code>if (p == NULL)</code> depois de cada alocação?</li>
+        <li>Usei <code>sizeof</code> junto com o <code>malloc</code>?</li>
+        <li>Dei <code>free</code> em tudo que aloquei?</li>
+        <li>Coloquei <code>p = NULL;</code> depois de cada <code>free</code>?</li>
+        <li>Usei <code>strcpy</code> para copiar textos?</li>
+        <li>Usei ponteiro temporário no <code>realloc</code>?</li>
+      </ul>
+    </div>
+
+    <h3>6.2 Exercício resolvido 1 — vetor dinâmico</h3>
+    <p><strong>Enunciado:</strong> Peça ao usuário quantos números ele quer digitar. Aloque um vetor dinamicamente, leia os valores, mostre a soma e libere a memória.</p>
+
+    <h4>Passo 1 — Entender o problema</h4>
+    <p>O tamanho só é conhecido depois da digitação. Então precisamos de alocação dinâmica com <code>malloc</code>.</p>
+
+    <h4>Passo 2 — Escrever o código</h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int n;              /* quantos numeros */
+    int *v;             /* ponteiro para o vetor dinamico */
+    int i;
+    int soma = 0;       /* acumulador da soma */
+
+    printf("Quantos numeros? ");
+    scanf("%d", &amp;n);
+
+    if (n &lt;= 0) {       /* cuidado com tamanho invalido! */
+        printf("Quantidade invalida.\n");
+        return 1;
+    }
+
+    v = (int *) malloc(n * sizeof(int));   /* pede o espaco */
+
+    if (v == NULL) {                        /* testa o retorno */
+        printf("Erro de memoria.\n");
+        return 1;
+    }
+
+    for (i = 0; i &lt; n; i++) {              /* le os valores */
+        printf("Valor %d: ", i + 1);
+        scanf("%d", &amp;v[i]);
+    }
+
+    for (i = 0; i &lt; n; i++) {              /* soma os valores */
+        soma = soma + v[i];
+    }
+
+    printf("Soma = %d\n", soma);
+
+    free(v);        /* devolve a memoria */
+    v = NULL;       /* evita ponteiro solto */
+
+    return 0;
+}</code></pre>
+
+    <h4>Passo 3 — Conferir</h4>
+    <ul>
+      <li>Se o usuário digitar 3 e os valores 10, 20, 30, a saída é <code>Soma = 60</code>.</li>
+      <li>Testei <code>NULL</code>? Sim.</li>
+      <li>Dei <code>free</code>? Sim.</li>
+      <li>Coloquei <code>v = NULL</code>? Sim.</li>
+    </ul>
+
+    <h3>6.3 Exercício resolvido 2 — TAD Aluno</h3>
+    <p><strong>Enunciado:</strong> Crie um TAD Aluno com nome, nota1 e nota2. Ele deve ter funções para criar o aluno, calcular a média e dizer se ele foi aprovado (média maior ou igual a 6).</p>
+
+    <h4>Passo 1 — Identificar os dados</h4>
+    <p>Dados: nome (texto), nota1 (decimal), nota2 (decimal).</p>
+
+    <h4>Passo 2 — Identificar as operações</h4>
+    <p>Operações: criar aluno, calcular média, verificar aprovação.</p>
+
+    <h4>Passo 3 — Escrever o .h</h4>
+<pre><code class="language-c">#ifndef ALUNO_H
+#define ALUNO_H
+
+#define TAM_NOME 50
+
+typedef struct {
+    char nome[TAM_NOME];
+    float nota1;
+    float nota2;
+} Aluno;
+
+Aluno criarAluno(const char *nome, float nota1, float nota2);
+float calcularMedia(Aluno a);
+int verificarAprovacao(Aluno a);
+
+#endif</code></pre>
+
+    <h4>Passo 4 — Escrever o .c</h4>
+<pre><code class="language-c">#include "aluno.h"
+#include &lt;string.h&gt;
+
+Aluno criarAluno(const char *nome, float nota1, float nota2) {
+    Aluno a;
+    strcpy(a.nome, nome);
+    a.nota1 = nota1;
+    a.nota2 = nota2;
+    return a;
+}
+
+float calcularMedia(Aluno a) {
+    return (a.nota1 + a.nota2) / 2.0;
+}
+
+int verificarAprovacao(Aluno a) {
+    if (calcularMedia(a) &gt;= 6.0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}</code></pre>
+
+    <h4>Passo 5 — Escrever o main.c e conferir</h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "aluno.h"
+
+int main(void) {
+    Aluno a = criarAluno("Joao", 5.0, 7.0);
+
+    printf("Nome: %s\n", a.nome);
+    printf("Media: %.2f\n", calcularMedia(a));   /* (5 + 7) / 2 = 6.00 */
+    printf("Aprovado? %d\n", verificarAprovacao(a));  /* 1 = sim */
+
+    return 0;
+}</code></pre>
+
+    <p><strong>Conferindo a conta:</strong> (5,0 + 7,0) / 2 = 6,0. Como 6,0 é maior ou igual a 6,0, o aluno é aprovado e a função devolve 1.</p>
+
+    <div class="box-dica">
+      <strong>Estratégia para qualquer exercício de TAD</strong>
+      <ol>
+        <li>Liste os <strong>dados</strong> (viram campos da struct).</li>
+        <li>Liste as <strong>ações</strong> (viram funções).</li>
+        <li>Escreva o <code>.h</code> com a struct e os protótipos.</li>
+        <li>Escreva o <code>.c</code> com o corpo das funções.</li>
+        <li>Escreva o <code>main.c</code> usando as funções.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ABA 2: EXEMPLOS ======================= -->
+<div class="tab-content" id="exemplos">
+
+  <div class="card">
+    <span class="tag">EXEMPLO 1</span>
+    <h2>Vetor Dinâmico Básico</h2>
+    <p>O exemplo mais clássico: o usuário diz quantos números quer, o programa reserva o espaço na hora e depois devolve.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int n;              /* quantos numeros o usuario quer guardar */
+    int *v;             /* ponteiro que vai apontar para o vetor */
+    int i;
+
+    printf("Quantos numeros voce quer guardar? ");
+    scanf("%d", &amp;n);
+
+    /* Pede ao computador um espaco para 'n' inteiros */
+    v = (int *) malloc(n * sizeof(int));
+
+    /* Teste de seguranca: a memoria foi mesmo conseguida? */
+    if (v == NULL) {
+        printf("Erro: nao foi possivel alocar memoria!\n");
+        return 1;
+    }
+
+    /* Lendo os valores digitados */
+    for (i = 0; i &lt; n; i++) {
+        printf("Digite o valor %d: ", i + 1);
+        scanf("%d", &amp;v[i]);      /* v[i] e o mesmo que *(v + i) */
+    }
+
+    /* Mostrando os valores */
+    printf("\nVoce digitou: ");
+    for (i = 0; i &lt; n; i++) {
+        printf("%d ", v[i]);
+    }
+    printf("\n");
+
+    /* Devolve a memoria para o computador */
+    free(v);
+    v = NULL;
+
+    return 0;
+}</code></pre>
+
+    <div class="box-conceito">
+      <strong>O que aconteceu aqui?</strong>
+      <code>n</code> é uma variável normal, guardada na pilha. <code>v</code> é um ponteiro que guarda o <strong>endereço</strong> de um bloco no heap. O bloco só existe porque pedimos com <code>malloc</code> — e só continua existindo até o <code>free</code>.
+    </div>
+
+    <div class="box-dica">
+      <strong>Detalhe importante</strong>
+      <code>v[i]</code> e <code>*(v + i)</code> são exatamente a mesma coisa. Use <code>v[i]</code>, que é mais fácil de ler.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">EXEMPLO 2</span>
+    <h2>Média de Notas com Alocação Dinâmica (usando calloc)</h2>
+    <p>Aqui usamos <code>calloc</code> porque queremos que todas as notas comecem zeradas — assim não corremos o risco de somar lixo de memória.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int n;                  /* quantidade de notas */
+    int i;
+    float *notas;           /* vetor dinamico de notas */
+    float soma = 0.0;       /* acumulador da soma */
+
+    printf("Quantas notas a turma tem? ");
+    scanf("%d", &amp;n);
+
+    /* calloc = reserva N elementos E ja deixa todos zerados */
+    notas = (float *) calloc(n, sizeof(float));
+
+    if (notas == NULL) {        /* teste obrigatorio */
+        printf("Erro: memoria insuficiente!\n");
+        return 1;
+    }
+
+    for (i = 0; i &lt; n; i++) {
+        printf("Digite a nota %d: ", i + 1);
+        scanf("%f", &amp;notas[i]);
+        soma = soma + notas[i];      /* ja vou somando */
+    }
+
+    /* Mostro a media da turma */
+    printf("\nMedia da turma = %.2f\n", soma / n);
+
+    free(notas);        /* devolvo a memoria */
+    notas = NULL;       /* evito ponteiro solto */
+
+    return 0;
+}</code></pre>
+
+    <div class="box-analogia">
+      <strong>Por que calloc aqui?</strong>
+      É como preparar uma folha de prova em branco antes de começar. Se a folha já viesse com anotações antigas (lixo de memória), você poderia somar coisas que não deveria. Com <code>calloc</code>, a folha vem limpinha.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">EXEMPLO 3</span>
+    <h2>TAD Ponto e TAD Aluno (completo, 3 arquivos)</h2>
+
+    <h3>Parte A — TAD Ponto</h3>
+
+    <h4>ponto.h (Interface)</h4>
+<pre><code class="language-c">#ifndef PONTO_H
+#define PONTO_H
+
+typedef struct {
+    float x;    /* coordenada x do ponto */
+    float y;    /* coordenada y do ponto */
+} Ponto;
+
+Ponto criarPonto(float x, float y);      /* cria um ponto */
+float distancia(Ponto a, Ponto b);       /* distancia entre dois pontos */
+
+#endif</code></pre>
+
+    <h4>ponto.c (Implementação)</h4>
+<pre><code class="language-c">#include "ponto.h"
+#include &lt;math.h&gt;
+
+Ponto criarPonto(float x, float y) {
+    Ponto p;
+    p.x = x;
+    p.y = y;
+    return p;
+}
+
+float distancia(Ponto a, Ponto b) {
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    return sqrt(dx * dx + dy * dy);
+}</code></pre>
+
+    <h4>main.c (Uso)</h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "ponto.h"
+
+int main(void) {
+    Ponto p1 = criarPonto(0, 0);
+    Ponto p2 = criarPonto(3, 4);
+
+    printf("P1 = (%.1f, %.1f)\n", p1.x, p1.y);
+    printf("P2 = (%.1f, %.1f)\n", p2.x, p2.y);
+    printf("Distancia = %.2f\n", distancia(p1, p2));  /* 5.00 */
+
+    return 0;
+}</code></pre>
+
+    <h3>Parte B — TAD Aluno</h3>
+
+    <h4>aluno.h (Interface)</h4>
+<pre><code class="language-c">#ifndef ALUNO_H
+#define ALUNO_H
+
+#define TAM_NOME 50
+
+typedef struct {
+    char nome[TAM_NOME];   /* nome do aluno */
+    float nota1;           /* primeira nota */
+    float nota2;           /* segunda nota */
+} Aluno;
+
+Aluno criarAluno(const char *nome, float nota1, float nota2);
+float calcularMedia(Aluno a);
+int verificarAprovacao(Aluno a);   /* 1 = aprovado, 0 = reprovado */
+
+#endif</code></pre>
+
+    <h4>aluno.c (Implementação)</h4>
+<pre><code class="language-c">#include "aluno.h"
+#include &lt;string.h&gt;
+
+Aluno criarAluno(const char *nome, float nota1, float nota2) {
+    Aluno a;
+    strcpy(a.nome, nome);    /* copia o texto para dentro da struct */
+    a.nota1 = nota1;
+    a.nota2 = nota2;
+    return a;
+}
+
+float calcularMedia(Aluno a) {
+    return (a.nota1 + a.nota2) / 2.0;
+}
+
+int verificarAprovacao(Aluno a) {
+    if (calcularMedia(a) &gt;= 6.0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}</code></pre>
+
+    <h4>main.c (Uso)</h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "aluno.h"
+
+int main(void) {
+    Aluno a = criarAluno("Maria", 8.0, 6.0);
+
+    printf("Aluno: %s\n", a.nome);
+    printf("Media: %.2f\n", calcularMedia(a));
+
+    if (verificarAprovacao(a)) {
+        printf("Situacao: APROVADO\n");
+    } else {
+        printf("Situacao: REPROVADO\n");
+    }
+
+    return 0;
+}</code></pre>
+
+    <div class="box-dica">
+      <strong>Como compilar</strong>
+      TAD Ponto: <code>gcc main.c ponto.c -o ponto -lm</code><br>
+      TAD Aluno: <code>gcc main.c aluno.c -o aluno</code>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">EXEMPLO 4</span>
+    <h2>Uso Seguro de free() e realloc()</h2>
+    <p>Este exemplo mostra o jeito certo de crescer um vetor e o jeito certo de liberar a memória no final.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *v;
+    int *temp;      /* ponteiro TEMPORARIO para o realloc */
+    int i;
+
+    /* 1) Comeco com espaco para 2 inteiros */
+    v = (int *) malloc(2 * sizeof(int));
+    if (v == NULL) {
+        printf("Erro ao alocar.\n");
+        return 1;
+    }
+
+    v[0] = 1;
+    v[1] = 2;
+
+    /* 2) Quero aumentar de 2 para 4 posicoes.
+          Uso um ponteiro TEMPORARIO para nao perder o v original. */
+    temp = (int *) realloc(v, 4 * sizeof(int));
+
+    if (temp == NULL) {
+        /* Deu errado: o v original continua valido. Nao perco nada. */
+        printf("Nao consegui aumentar. Vou ficar com 2 posicoes.\n");
+        free(v);
+        v = NULL;
+        return 1;
+    }
+
+    v = temp;       /* agora sim: v aponta para o bloco maior */
+
+    v[2] = 3;
+    v[3] = 4;
+
+    /* 3) Mostro os quatro valores */
+    for (i = 0; i &lt; 4; i++) {
+        printf("%d ", v[i]);
+    }
+    printf("\n");
+
+    /* 4) Libero a memoria e deixo o ponteiro seguro */
+    free(v);
+    v = NULL;
+
+    return 0;
+}</code></pre>
+
+    <div class="box-pegadinha">
+      <strong>O erro que você NUNCA deve cometer</strong>
+<pre><code class="language-c">/* JEITO ERRADO: */
+v = (int *) realloc(v, 4 * sizeof(int));
+if (v == NULL) { ... }   /* Se falhou, o endereco antigo ja se perdeu! */</code></pre>
+      Se o <code>realloc</code> falhar, ele devolve <code>NULL</code> e o bloco antigo continua existindo — mas você não tem mais o endereço dele. Isso é um vazamento de memória.
+    </div>
+
+    <div class="box-conceito">
+      <strong>Resumo do exemplo</strong>
+      <ul>
+        <li><code>malloc</code> para criar, <code>realloc</code> para crescer, <code>free</code> para devolver.</li>
+        <li><code>realloc</code> sempre com ponteiro temporário.</li>
+        <li><code>free</code> seguido de <code>v = NULL</code>.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ABA 3: CÓDIGO & MEMÓRIA ======================= -->
+<div class="tab-content" id="memoria">
+
+  <div class="card">
+    <h2>Rastreando a Memória Passo a Passo</h2>
+    <p>Vamos pegar um programa pequeno e acompanhar, linha por linha, o que acontece com a memória. Considere que neste computador <code>sizeof(int) = 4</code> bytes.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *v = NULL;                            /* passo 1 */
+    int i;
+
+    v = (int *) malloc(3 * sizeof(int));      /* passo 2 */
+    if (v == NULL) {                          /* passo 3 */
+        printf("Erro de memoria!\n");
+        return 1;
+    }
+
+    v[0] = 10;                                /* passo 4 */
+    v[1] = 20;                                /* passo 5 */
+    v[2] = 30;                                /* passo 6 */
+
+    for (i = 0; i &lt; 3; i++) {                 /* passo 7 */
+        printf("%d ", v[i]);
+    }
+    printf("\n");
+
+    free(v);                                  /* passo 8 */
+    v = NULL;                                 /* passo 9 */
+
+    return 0;
+}</code></pre>
+
+    <h3>Tabela de rastreamento</h3>
+    <table>
+      <tr>
+        <th>Passo</th>
+        <th>Comando</th>
+        <th>Ponteiro <code>v</code></th>
+        <th>Bloco reservado</th>
+        <th>Conteúdo do bloco</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><code>int *v = NULL;</code></td>
+        <td><code>NULL</code> (não aponta para nada)</td>
+        <td>Nenhum</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><code>malloc(3 * sizeof(int))</code></td>
+        <td><code>0x1000</code></td>
+        <td>12 bytes (3 posições de 4 bytes)</td>
+        <td>lixo de memória (valores desconhecidos)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><code>if (v == NULL)</code></td>
+        <td><code>0x1000</code></td>
+        <td>Igual</td>
+        <td>Teste passou: <code>v</code> não é NULL, seguimos em frente</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><code>v[0] = 10;</code></td>
+        <td><code>0x1000</code></td>
+        <td>Posição <code>0x1000</code></td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><code>v[1] = 20;</code></td>
+        <td><code>0x1000</code></td>
+        <td>Posição <code>0x1004</code></td>
+        <td>10, 20</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><code>v[2] = 30;</code></td>
+        <td><code>0x1000</code></td>
+        <td>Posição <code>0x1008</code></td>
+        <td>10, 20, 30</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><code>printf("%d ", v[i]);</code></td>
+        <td><code>0x1000</code></td>
+        <td>Igual</td>
+        <td>Saída na tela: <code>10 20 30</code></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><code>free(v);</code></td>
+        <td><code>0x1000</code> (endereço velho ainda guardado!)</td>
+        <td>Devolvido ao computador</td>
+        <td>A memória <strong>não é mais nossa</strong>. Usar <code>v</code> agora é erro grave.</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><code>v = NULL;</code></td>
+        <td><code>NULL</code></td>
+        <td>—</td>
+        <td>Ponteiro zerado, seguro contra uso acidental</td>
+      </tr>
+    </table>
+
+    <div class="box-pegadinha">
+      <strong>Repare no passo 8!</strong>
+      Depois do <code>free</code>, o ponteiro <code>v</code> <strong>continua guardando o endereço <code>0x1000</code></strong>. Ele só não é mais um endereço válido. É exatamente por isso que existe o passo 9: colocar <code>v = NULL</code> para que qualquer uso indevido trave na hora e você descubra o erro.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rastreando um realloc</h2>
+    <p>Agora vamos acompanhar o que acontece quando aumentamos um bloco.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    int *v;
+    int *temp;
+
+    v = (int *) malloc(2 * sizeof(int));     /* passo 1 */
+    if (v == NULL) return 1;
+
+    v[0] = 5;                                /* passo 2 */
+    v[1] = 6;                                /* passo 3 */
+
+    temp = (int *) realloc(v, 4 * sizeof(int));   /* passo 4 */
+
+    if (temp == NULL) {                      /* passo 5 */
+        free(v);
+        return 1;
+    }
+
+    v = temp;                                /* passo 6 */
+    v[2] = 7;                                /* passo 7 */
+    v[3] = 8;                                /* passo 8 */
+
+    free(v);                                 /* passo 9 */
+    v = NULL;                                /* passo 10 */
+
+    return 0;
+}</code></pre>
+
+    <table>
+      <tr>
+        <th>Passo</th>
+        <th>Comando</th>
+        <th>Ponteiro <code>v</code></th>
+        <th>Ponteiro <code>temp</code></th>
+        <th>Situação do bloco</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><code>malloc(2 * sizeof(int))</code></td>
+        <td><code>0x2000</code></td>
+        <td>—</td>
+        <td>Bloco de 8 bytes criado no endereço <code>0x2000</code>, com lixo</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><code>v[0] = 5;</code></td>
+        <td><code>0x2000</code></td>
+        <td>—</td>
+        <td><code>[5, lixo]</code></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><code>v[1] = 6;</code></td>
+        <td><code>0x2000</code></td>
+        <td>—</td>
+        <td><code>[5, 6]</code></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><code>realloc(v, 4 * sizeof(int))</code></td>
+        <td><code>0x2000</code> (ainda o antigo)</td>
+        <td><code>0x3000</code> (novo endereço)</td>
+        <td>O computador achou outro lugar maior. Copiou <code>[5, 6]</code> para lá e liberou o bloco antigo automaticamente.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><code>if (temp == NULL)</code></td>
+        <td><code>0x2000</code></td>
+        <td><code>0x3000</code></td>
+        <td>Teste passou: <code>temp</code> não é NULL, deu tudo certo</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><code>v = temp;</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>0x3000</code></td>
+        <td>Agora <code>v</code> aponta para o bloco novo e maior</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><code>v[2] = 7;</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>[5, 6, 7, lixo]</code></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><code>v[3] = 8;</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>[5, 6, 7, 8]</code></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><code>free(v);</code></td>
+        <td><code>0x3000</code></td>
+        <td><code>0x3000</code></td>
+        <td>Bloco devolvido ao computador</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><code>v = NULL;</code></td>
+        <td><code>NULL</code></td>
+        <td><code>0x3000</code> (mas esse bloco já não existe mais)</td>
+        <td>Fim seguro do programa</td>
+      </tr>
+    </table>
+
+    <div class="box-conceito">
+      <strong>Detalhe curioso</strong>
+      O <code>realloc</code> pode devolver o <strong>mesmo</strong> endereço (se houver espaço sobrando ali do lado) ou um <strong>endereço diferente</strong> (se precisar mudar de lugar). Por isso nunca confie que o endereço vai continuar o mesmo.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Como o TAD Aluno fica na memória</h2>
+    <p>Quando criamos <code>Aluno a = criarAluno("Maria", 8.0, 6.0);</code>, a struct ocupa um espaço contínuo na memória.</p>
+
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Tamanho aproximado</th>
+        <th>Valor guardado</th>
+      </tr>
+      <tr><td><code>nome</code></td><td><code>char[50]</code></td><td>50 bytes</td><td><code>"Maria\0"</code> + espaços restantes</td>
+      </tr>
+      <tr><td><code>nota1</code></td><td><code>float</code></td><td>4 bytes</td><td>8.0</td></tr>
+      <tr><td><code>nota2</code></td><td><code>float</code></td><td>4 bytes</td><td>6.0</td></tr>
+      <tr><td><strong>Total</strong></td><td>—</td><td><strong>cerca de 58 bytes</strong></td><td>A struct inteira é copiada quando passamos por valor</td></tr>
+    </table>
+
+    <div class="box-dica">
+      <strong>Detalhe importante</strong>
+      Toda a memória do TAD Aluno foi reservada <strong>estaticamente</strong> dentro da struct, porque o nome tem tamanho fixo (<code>char[50]</code>). O TAD organiza os dados e as funções, mas não obriga a usar alocação dinâmica.
+    </div>
+
+    <h3>Trace simples de um programa com TAD</h3>
+    <table>
+      <tr><th>Linha executada</th><th>O que acontece na memória</th></tr>
+      <tr><td><code>Aluno a = criarAluno("Maria", 8.0, 6.0);</code></td><td>Cria uma struct Aluno na pilha, com nome preenchido por <code>strcpy</code> e as duas notas.</td></tr>
+      <tr><td><code>calcularMedia(a)</code></td><td>Uma <strong>cópia</strong> da struct é enviada para a função (passagem por valor). A função soma as notas e divide por 2.</td></tr>
+      <tr><td><code>verificarAprovacao(a)</code></td><td>Outra <strong>cópia</strong> é enviada. Dentro dela, <code>calcularMedia</code> é chamada de novo. Devolve 1 ou 0.</td></tr>
+      <tr><td><code>return 0;</code></td><td>Todas as variáveis locais são destruídas automaticamente. Nada precisa de <code>free</code>, porque nada foi alocado dinamicamente.</td></tr>
+    </table>
+
+    <div class="box-pegadinha">
+      <strong>Atenção</strong>
+      Como as structs são passadas por <strong>valor</strong> (cópias), alterações feitas dentro da função não afetam o aluno original. Se você quiser alterar de verdade, precisará passar um <strong>ponteiro</strong> para a struct.
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ABA 4: COMPARAÇÕES ======================= -->
+<div class="tab-content" id="comparacoes">
+
+  <div class="card">
+    <h2>Estática vs Dinâmica — comparação detalhada</h2>
+    <table>
+      <tr>
+        <th>Característica</th>
+        <th>Alocação Estática</th>
+        <th>Alocação Dinâmica</th>
+      </tr>
+      <tr>
+        <td>Quando o tamanho é definido</td>
+        <td>Antes do programa rodar, escrito no código</td>
+        <td>Durante a execução, em tempo real</td>
+      </tr>
+      <tr>
+        <td>Quem decide o tamanho</td>
+        <td>O programador, na escrita do código</td>
+        <td>O programa, com base nos dados (digitação, arquivo etc.)</td>
+      </tr>
+      <tr>
+        <td>Exemplo em C</td>
+        <td><code>int v[10];</code></td>
+        <td><code>int *v = (int *) malloc(n * sizeof(int));</code></td>
+      </tr>
+      <tr>
+        <td>Área da memória</td>
+        <td>Pilha (stack)</td>
+        <td>Monte (heap)</td>
+      </tr>
+      <tr>
+        <td>Precisa de ponteiro</td>
+        <td>Não</td>
+        <td>Sim</td>
+      </tr>
+      <tr>
+        <td>Usa malloc/calloc/realloc</td>
+        <td>Não</td>
+        <td>Sim</td>
+      </tr>
+      <tr>
+        <td>Precisa de free</td>
+        <td>Não, o computador libera sozinho</td>
+        <td>Sim, o programador é responsável</td>
+      </tr>
+      <tr>
+        <td>Pode mudar de tamanho</td>
+        <td>Não</td>
+        <td>Sim, com <code>realloc</code></td>
+      </tr>
+      <tr>
+        <td>Velocidade</td>
+        <td>Mais rápida</td>
+        <td>Um pouco mais lenta (precisa procurar espaço)</td>
+      </tr>
+      <tr>
+        <td>Se faltar espaço</td>
+        <td>O programa quebra ou grava fora do lugar</td>
+        <td>O <code>malloc</code> devolve <code>NULL</code> e você trata o erro</td>
+      </tr>
+      <tr>
+        <td>Se sobrar espaço</td>
+        <td>Desperdício de memória</td>
+        <td>Você aloca só o necessário</td>
+      </tr>
+      <tr>
+        <td>Risco principal</td>
+        <td>Desperdício ou falta de espaço</td>
+        <td>Vazamento de memória, ponteiro solto, double free</td>
+      </tr>
+      <tr>
+        <td>Quando usar</td>
+        <td>Quando o tamanho é conhecido e fixo</td>
+        <td>Quando o tamanho depende do usuário ou dos dados</td>
+      </tr>
+    </table>
+
+    <div class="box-dica">
+      <strong>Regra prática</strong>
+      Se o tamanho não muda nunca, prefira estática: menos código e menos erro. Se o tamanho vem de fora, use dinâmica.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>malloc() vs calloc() — comparação detalhada</h2>
+    <table>
+      <tr>
+        <th>Característica</th>
+        <th>malloc()</th>
+        <th>calloc()</th>
+      </tr>
+      <tr>
+        <td>Nome completo</td>
+        <td>Memory Allocation</td>
+        <td>Contiguous Allocation</td>
+      </tr>
+      <tr>
+        <td>Assinatura</td>
+        <td><code>void *malloc(size_t bytes)</code></td>
+        <td><code>void *calloc(size_t n, size_t bytes)</code></td>
+      </tr>
+      <tr>
+        <td>Quantidade de parâmetros</td>
+        <td>1 (total de bytes)</td>
+        <td>2 (quantidade e tamanho de cada elemento)</td>
+      </tr>
+      <tr>
+        <td>Cálculo do tamanho</td>
+        <td>Você faz a multiplicação: <code>n * sizeof(int)</code></td>
+        <td>A função faz a multiplicação por você</td>
+      </tr>
+      <tr>
+        <td>Conteúdo inicial</td>
+        <td>Lixo de memória (indeterminado)</td>
+        <td>Todos os bytes zerados</td>
+      </tr>
+      <tr>
+        <td>Velocidade</td>
+        <td>Um pouco mais rápida</td>
+        <td>Um pouco mais lenta (precisa escrever zeros)</td>
+      </tr>
+      <tr>
+        <td>Retorno em caso de falha</td>
+        <td><code>NULL</code></td>
+        <td><code>NULL</code></td>
+      </tr>
+      <tr>
+        <td>Precisa de free depois?</td>
+        <td>Sim</td>
+        <td>Sim</td>
+      </tr>
+      <tr>
+        <td>Quando usar</td>
+        <td>Quando você vai preencher todas as posições logo em seguida</td>
+        <td>Quando precisa começar do zero (contadores, somas, matrizes)</td>
+      </tr>
+      <tr>
+        <td>Exemplo</td>
+        <td><code>int *v = (int *) malloc(5 * sizeof(int));</code></td>
+        <td><code>int *v = (int *) calloc(5, sizeof(int));</code></td>
+      </tr>
+    </table>
+
+    <div class="box-analogia">
+      <strong>Resumindo a diferença em uma frase</strong>
+      <code>malloc</code> entrega a gaveta suja; <code>calloc</code> entrega a gaveta limpa. As duas têm o mesmo tamanho.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Struct vs TAD — comparação detalhada</h2>
+    <table>
+      <tr>
+        <th>Característica</th>
+        <th>Struct</th>
+        <th>TAD (Tipo Abstrato de Dados)</th>
+      </tr>
+      <tr>
+        <td>O que é</td>
+        <td>Um agrupamento de variáveis</td>
+        <td>Um agrupamento de dados + operações sobre eles</td>
+      </tr>
+      <tr>
+        <td>Tem funções próprias?</td>
+        <td>Não</td>
+        <td>Sim, as funções que operam sobre a struct</td>
+      </tr>
+      <tr>
+        <td>Esconde detalhes internos?</td>
+        <td>Não, tudo fica visível</td>
+        <td>Sim, quem usa só vê a interface</td>
+      </tr>
+      <tr>
+        <td>Onde fica declarado</td>
+        <td>Em qualquer lugar do código</td>
+        <td>No arquivo <code>.h</code> (interface)</td>
+      </tr>
+      <tr>
+        <td>Onde fica implementado</td>
+        <td>Junto com o código principal</td>
+        <td>No arquivo <code>.c</code> (implementação)</td>
+      </tr>
+      <tr>
+        <td>Reuso</td>
+        <td>Limitado, precisa copiar o código</td>
+        <td>Alto, basta incluir o <code>.h</code> em outros programas</td>
+      </tr>
+      <tr>
+        <td>Manutenção</td>
+        <td>Mudança exige alterar vários lugares</td>
+        <td>Mudança fica concentrada em um único arquivo</td>
+      </tr>
+      <tr>
+        <td>Exemplo</td>
+        <td><code>struct { float x, y; } Ponto;</code></td>
+        <td><code>Ponto</code> + <code>criarPonto()</code> + <code>distancia()</code></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Pegadinhas de memória lado a lado</h2>
+    <table>
+      <tr>
+        <th>Problema</th>
+        <th>Como acontece</th>
+        <th>Como evitar</th>
+      </tr>
+      <tr>
+        <td>Memory Leak (vazamento)</td>
+        <td>Esquecer o <code>free</code> ou perder o endereço do ponteiro</td>
+        <td>Um <code>free</code> para cada alocação; nunca reatribuir um ponteiro sem liberar antes</td>
+      </tr>
+      <tr>
+        <td>Dangling Pointer / Use After Free</td>
+        <td>Usar a memória depois do <code>free</code></td>
+        <td>Colocar <code>p = NULL;</code> logo após o <code>free</code></td>
+      </tr>
+      <tr>
+        <td>Double Free</td>
+        <td>Chamar <code>free</code> duas vezes no mesmo bloco</td>
+        <td>Colocar <code>p = NULL;</code> depois do primeiro <code>free</code> (pois <code>free(NULL)</code> é inofensivo)</td>
+      </tr>
+      <tr>
+        <td>Falha não tratada</td>
+        <td>Usar o ponteiro sem testar se é <code>NULL</code></td>
+        <td>Sempre fazer <code>if (p == NULL) { tratar erro }</code></td>
+      </tr>
+      <tr>
+        <td>realloc inseguro</td>
+        <td><code>v = realloc(v, n);</code> e o realloc falha</td>
+        <td>Usar ponteiro temporário e só depois <code>v = temp;</code></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ======================= ABA 5: RESUMO ======================= -->
+<div class="tab-content" id="resumo">
+
+  <div class="card">
+    <h2>Resumo Relâmpago para a Véspera da Prova</h2>
+    <p class="small">Leia estes dez pontos antes de dormir. Eles cobrem praticamente tudo o que cai na prova.</p>
+
+    <div class="box-conceito">
+      <strong>1. Alocar memória = reservar espaço na RAM</strong>
+      É pegar uma gaveta vazia do computador e colar uma etiqueta com o nome da variável, para guardar dados enquanto o programa roda.
+    </div>
+
+    <div class="box-conceito">
+      <strong>2. Estática = tamanho fixo</strong>
+      <code>int v[10];</code> — o tamanho é escrito no código, o computador gerencia sozinho e <strong>não</strong> se usa <code>malloc</code> nem <code>free</code>.
+    </div>
+
+    <div class="box-conceito">
+      <strong>3. Dinâmica = tamanho flexível</strong>
+      O tamanho é decidido durante a execução. Usa ponteiro + <code>malloc</code>/<code>calloc</code>, e o programador é responsável por liberar com <code>free</code>.
+    </div>
+
+    <div class="box-conceito">
+      <strong>4. sizeof conta os bytes</strong>
+      <code>sizeof(int)</code> diz quantos bytes um inteiro ocupa. Como isso varia de máquina para máquina, use sempre <code>sizeof</code> junto com <code>malloc</code>. Imprima com <code>%zu</code>.
+    </div>
+
+    <div class="box-conceito">
+      <strong>5. malloc não limpa; calloc zera</strong>
+      <code>malloc</code> entrega a memória com lixo. <code>calloc</code> entrega tudo zerado. Essa é a diferença essencial entre as duas.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>6. SEMPRE teste se o ponteiro é NULL</strong>
+      Depois de <code>malloc</code>, <code>calloc</code> ou <code>realloc</code>, escreva <code>if (p == NULL)</code>. Sem esse teste, o programa pode travar na hora.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>7. realloc só com ponteiro temporário</strong>
+      <code>temp = realloc(v, novo); if (temp != NULL) v = temp;</code>. Se você fizer direto em <code>v</code> e falhar, perde o endereço antigo e cria vazamento.
+    </div>
+
+    <div class="box-dica">
+      <strong>8. free devolve, e depois vira NULL</strong>
+      Um <code>free</code> para cada alocação. Logo depois, <code>p = NULL;</code> para evitar ponteiro solto e double free.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>9. Os três vilões da memória</strong>
+      <ul>
+        <li><strong>Memory Leak:</strong> esquecer o <code>free</code>.</li>
+        <li><strong>Dangling Pointer / Use After Free:</strong> usar depois do <code>free</code>.</li>
+        <li><strong>Double Free:</strong> dar <code>free</code> duas vezes no mesmo bloco.</li>
+      </ul>
+    </div>
+
+    <div class="box-conceito">
+      <strong>10. TAD = struct + funções</strong>
+      Um TAD junta os dados (struct) com as operações que mexem neles (funções). Divide-se em <code>.h</code> (interface, com Header Guard), <code>.c</code> (implementação) e <code>main.c</code> (uso). E nunca esqueça: <code>#include &lt;stdlib.h&gt;</code> para memória e <code>strcpy</code> para copiar strings.
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ABA 6: QUIZ ======================= -->
+<div class="tab-content" id="quiz">
+
+  <div class="card">
+    <h2>Quiz Interativo</h2>
+    <p>Escolha uma alternativa em cada questão. O sistema mostra na hora se você acertou e explica o porquê, com calma e sem enrolação.</p>
+  </div>
+
+  <!-- QUESTÃO 1 -->
+  <div class="quiz-card">
+    <p class="quiz-question">1) Qual é a diferença principal entre <code>malloc()</code> e <code>calloc()</code>?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. É o contrário: o malloc é que é um pouquinho mais rápido, justamente porque não precisa escrever zeros em cada byte. O calloc é um pouco mais lento por causa dessa limpeza.">A) <code>malloc()</code> é mais rápida porque zera a memória antes de entregar.</button>
+      <button class="quiz-opt" data-correct="true" data-explain="Isso mesmo! O <code>calloc()</code> reserva a memória e já coloca ZERO em todos os bytes. O <code>malloc()</code> reserva, mas deixa o lixo de memória que estava lá antes (valores desconhecidos).">B) <code>calloc()</code> reserva e já coloca ZERO em todos os bytes; <code>malloc()</code> deixa lixo de memória.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. As duas funções funcionam com qualquer tipo de dado. Você escolhe o tipo pelo tamanho que passa em <code>sizeof</code>, não pelo nome da função.">C) <code>malloc()</code> só serve para inteiros e <code>calloc()</code> só serve para números decimais.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. São funções diferentes, com parâmetros diferentes e comportamentos diferentes. Elas não são apelidos uma da outra.">D) Não existe diferença nenhuma: são dois nomes para a mesma função.</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- QUESTÃO 2 -->
+  <div class="quiz-card">
+    <p class="quiz-question">2) Verdadeiro ou Falso: depois de chamar <code>free(p)</code>, é boa prática escrever <code>p = NULL;</code>.</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" data-explain="Exato! O <code>free</code> devolve a memória, mas o ponteiro continua guardando o endereço antigo. Colocando <code>NULL</code>, qualquer uso indevido trava na hora e você descobre o erro. Além disso, <code>free(NULL)</code> é inofensivo, o que protege contra double free acidental.">A) Verdadeiro</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Não é falso. Depois do <code>free</code>, o ponteiro vira um ponteiro solto (dangling pointer). Colocar <code>p = NULL;</code> é uma boa prática recomendada, porque deixa o ponteiro num estado seguro.">B) Falso</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- QUESTÃO 3 -->
+  <div class="quiz-card">
+    <p class="quiz-question">3) Por que é perigoso escrever <code>v = (int *) realloc(v, novo_tamanho);</code> diretamente?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. O <code>realloc</code> funciona perfeitamente com vetores de inteiros. O problema não é o tipo de dado, e sim o tratamento do retorno.">A) Porque o <code>realloc</code> não funciona com vetores de <code>int</code>.</button>
+      <button class="quiz-opt" data-correct="true" data-explain="Perfeito! Se o <code>realloc</code> falhar, ele devolve <code>NULL</code>. Como você jogou esse <code>NULL</code> dentro de <code>v</code>, perdeu o endereço do bloco antigo — e o bloco antigo continua ocupando memória sem ninguém saber onde ele está. Isso é um vazamento de memória. O certo é usar um ponteiro temporário e só depois fazer <code>v = temp;</code>.">B) Porque, se o <code>realloc</code> falhar, ele devolve <code>NULL</code> e o endereço antigo guardado em <code>v</code> se perde, gerando vazamento de memória.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. Essa linha não dá erro de sintaxe nenhum. O compilador aceita. O problema só aparece na execução, quando o <code>realloc</code> falha.">C) Porque o compilador acusa erro de sintaxe nessa linha.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. O <code>realloc</code> foi feito exatamente para ser usado depois de um <code>malloc</code> ou <code>calloc</code>. Essa é a função dele.">D) Porque o <code>realloc</code> nunca pode ser usado depois de um <code>malloc</code>.</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- QUESTÃO 4 -->
+  <div class="quiz-card">
+    <p class="quiz-question">4) O que é um Tipo Abstrato de Dados (TAD)?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. Um TAD não é um tipo específico de variável. Ele é um conceito de organização: juntar dados com as operações que mexem neles.">A) Um tipo de variável especial que só guarda números inteiros.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. Um TAD é código-fonte em C (normalmente um <code>.h</code> e um <code>.c</code>), não um arquivo executável pronto.">B) Um arquivo executável pronto que o programador só precisa copiar.</button>
+      <button class="quiz-opt" data-correct="true" data-explain="Isso! O TAD junta os dados (a struct) com as operações permitidas (as funções) e esconde os detalhes internos de quem vai usar. É como a calculadora: você usa os botões sem precisar entender os circuitos.">C) Um conjunto de dados (struct) mais as operações (funções) que podem mexer nesses dados, escondendo os detalhes internos.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. O TAD não aloca memória automaticamente. Se ele precisar de memória dinâmica, o programador continua sendo responsável por <code>malloc</code> e <code>free</code>.">D) Uma função mágica que aloca memória automaticamente e libera sozinha.</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- QUESTÃO 5 -->
+  <div class="quiz-card">
+    <p class="quiz-question">5) Analise o código abaixo e diga qual é o problema:</p>
+<pre><code class="language-c">int *v = (int *) malloc(5 * sizeof(int));
+if (v == NULL) return 1;
+v[0] = 10;
+free(v);
+printf("%d", v[0]);</code></pre>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. Há um problema sério sim. O <code>printf</code> está lendo uma memória que já foi devolvida ao computador, o que é comportamento indefinido.">A) Nada de errado, o programa funciona perfeitamente e imprime 10.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. O <code>#include &lt;stdlib.h&gt;</code> seria necessário para o <code>malloc</code> e o <code>free</code>, mas o erro mostrado no trecho é outro, mais grave e relacionado ao uso da memória.">B) Falta apenas o <code>#include &lt;stdio.h&gt;</code>.</button>
+      <button class="quiz-opt" data-correct="true" data-explain="Muito bem! Depois do <code>free(v)</code>, o bloco não é mais nosso. Ler <code>v[0]</code> ali é um <em>use after free</em> (uso depois da liberação), também chamado de dangling pointer. O resultado é imprevisível: pode mostrar lixo, pode travar. O certo seria fazer <code>v = NULL;</code> logo depois do <code>free</code> e nunca mais usar <code>v</code>.">C) Está lendo memória depois do <code>free</code> (dangling pointer / use after free), o que é comportamento indefinido.</button>
+      <button class="quiz-opt" data-correct="false" data-explain="Errado. O <code>calloc</code> só serviria para deixar a memória zerada. Isso não resolveria o problema, que é usar a memória depois de ela ter sido liberada.">D) O <code>malloc</code> deveria ser <code>calloc</code>.</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="card">
+    <div class="box-dica">
+      <strong>Terminou o quiz?</strong>
+      Se você acertou 5 de 5, você está pronto para a prova. Se errou alguma, volte na aba <strong>Teoria</strong> e leia de novo o trecho sobre o assunto da questão errada. E lembre-se sempre: <code>malloc</code> sem <code>free</code> é vazamento, e <code>free</code> sem <code>NULL</code> é ponteiro solto.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ 1) TROCA DE ABAS ============ */
+const botoesAba = document.querySelectorAll('.tab-btn');
+const conteudosAba = document.querySelectorAll('.tab-content');
+
+botoesAba.forEach(function (botao) {
+  botao.addEventListener('click', function () {
+    /* tira o "active" de todos os botoes */
+    botoesAba.forEach(function (b) {
+      b.classList.remove('active');
+    });
+    /* esconde todos os conteudos */
+    conteudosAba.forEach(function (c) {
+      c.classList.remove('active');
+    });
+    /* ativa o botao clicado e o conteudo correspondente */
+    botao.classList.add('active');
+    const idDaAba = botao.getAttribute('data-tab');
+    document.getElementById(idDaAba).classList.add('active');
+    /* volta para o topo, para o estudante nao se perder */
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ============ 2) MOTOR DO QUIZ ============ */
+document.querySelectorAll('.quiz-opt').forEach(function (botao) {
+  botao.addEventListener('click', function () {
+    const card = botao.closest('.quiz-card');
+    const feedback = card.querySelector('.feedback');
+    const todasAsOpcoes = card.querySelectorAll('.quiz-opt');
+    const opcaoCorreta = card.querySelector('.quiz-opt[data-correct="true"]');
+
+    /* bloqueia todas as opcoes depois da primeira escolha */
+    todasAsOpcoes.forEach(function (opcao) {
+      opcao.disabled = true;
+    });
+
+    const acertou = botao.getAttribute('data-correct') === 'true';
+
+    /* pinta a opcao correta de verde, para o estudante aprender */
+    opcaoCorreta.style.background = 'var(--success-soft)';
+    opcaoCorreta.style.borderColor = 'var(--success)';
+
+    /* se errou, pinta a opcao escolhida de vermelho */
+    if (!acertou) {
+      botao.style.background = 'var(--danger-soft)';
+      botao.style.borderColor = 'var(--danger)';
+    }
+
+    /* monta a mensagem de retorno */
+    let mensagem = '';
+    if (acertou) {
+      mensagem = '<strong>✅ Acertou! Muito bem!</strong><br>' + botao.getAttribute('data-explain');
+    } else {
+      mensagem = '<strong>❌ Errou. Vamos entender:</strong><br>' +
+                 botao.getAttribute('data-explain') +
+                 '<br><br><strong>Por que a resposta certa é essa:</strong> ' +
+                 opcaoCorreta.getAttribute('data-explain');
+    }
+
+    feedback.innerHTML = mensagem;
+    feedback.classList.add(acertou ? 'correct' : 'incorrect');
+    feedback.style.display = 'block';
+  });
+});
+
+/* ============ 3) COLORIR O CODIGO C ============ */
+if (window.hljs) {
+  hljs.highlightAll();
+}
+</script>
+
+</body>
+</html>

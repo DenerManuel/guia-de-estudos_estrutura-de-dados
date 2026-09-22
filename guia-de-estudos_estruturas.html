@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Definitivo de Estruturas de Dados: Listas, Filas, Pilhas e Grafos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --accent: #4F46E5;
+  --accent-soft: #EEF2FF;
+  --accent-2: #7C3AED;
+  --accent-2-soft: #F5F3FF;
+  --success: #059669;
+  --success-soft: #ECFDF5;
+  --warning: #D97706;
+  --warning-soft: #FFFBEB;
+  --danger: #DC2626;
+  --danger-soft: #FEF2F2;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --border-soft: #F3F4F6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 24px 16px; font-size: 16px; max-width: 1100px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { color: var(--accent); font-size: 2.2rem; margin-bottom: 6px; font-weight: 700; }
+.header p { color: var(--muted); font-size: 1rem; font-weight: 500; }
+
+.nav-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: var(--card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s ease; font-family: inherit; font-size: 0.95rem; }
+.tab-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 20px; }
+.card h2 { color: var(--accent); font-size: 1.4rem; margin-bottom: 12px; }
+.card h3 { color: var(--accent-2); font-size: 1.15rem; margin: 16px 0 8px; }
+.card h4 { font-size: 1rem; margin: 14px 0 6px; color: var(--text); }
+.card p { margin-bottom: 10px; }
+.card ul, .card ol { margin: 10px 0 10px 22px; }
+.card li { margin-bottom: 6px; }
+
+.box-conceito  { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-analogia  { border-left: 4px solid var(--accent-2); background: var(--accent-2-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-pegadinha { border-left: 4px solid var(--danger); background: var(--danger-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-dica      { border-left: 4px solid var(--success); background: var(--success-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+
+.box-conceito strong, .box-analogia strong, .box-pegadinha strong, .box-dica strong { display: block; margin-bottom: 6px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: .04em; }
+.box-conceito strong { color: var(--accent); }
+.box-analogia strong { color: var(--accent-2); }
+.box-pegadinha strong { color: var(--danger); }
+.box-dica strong { color: var(--success); }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 8px; overflow: hidden; }
+th, td { border: 1px solid var(--border); padding: 12px 14px; text-align: left; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+tr:nth-child(even) td { background: var(--border-soft); }
+
+pre { background: #0F172A; color: #F8FAFC; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 0.9rem; margin: 12px 0; }
+code { font-family: 'Fira Code', Consolas, monospace; }
+p code, li code, td code { background: var(--border-soft); color: var(--accent-2); padding: 2px 6px; border-radius: 5px; font-size: 0.9em; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.quiz-opt { background: var(--border-soft); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; font-family: inherit; color: var(--text); }
+.quiz-opt:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+.quiz-opt:disabled { cursor: default; opacity: 0.85; }
+.quiz-opt.correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+.quiz-opt.wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+.feedback { margin-top: 12px; padding: 14px; border-radius: 8px; display: none; font-size: 0.95rem; }
+.feedback.correct { background: var(--success-soft); color: var(--success); border: 1px solid var(--success); display: block; }
+.feedback.incorrect { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); display: block; }
+
+.quiz-q { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px dashed var(--border); }
+.quiz-q:last-child { border-bottom: none; }
+.quiz-tag { display: inline-block; background: var(--accent-2-soft); color: var(--accent-2); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .04em; }
+.quiz-pergunta { font-weight: 600; margin-bottom: 4px; }
+
+.trace-table td { font-family: 'Fira Code', Consolas, monospace; font-size: 0.88rem; }
+.hl { background: var(--warning-soft) !important; color: var(--warning); font-weight: 700; }
+
+footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 30px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guia de Estudos · ADS - Estruturas de Dados em C</h1>
+  <p>Listas, Filas, Pilhas e Grafos — do zero, com analogias do dia a dia e código C simples</p>
+</div>
+
+<nav class="nav-tabs">
+  <button class="tab-btn active" data-tab="teoria">📚 Teoria</button>
+  <button class="tab-btn" data-tab="exemplos">🧪 Exemplos</button>
+  <button class="tab-btn" data-tab="codigo">💻 Código &amp; Estruturas</button>
+  <button class="tab-btn" data-tab="comparacoes">⚖️ Comparações</button>
+  <button class="tab-btn" data-tab="resumo">⚡ Resumo</button>
+  <button class="tab-btn" data-tab="quiz">🎯 Quiz</button>
+</nav>
+
+<!-- ============ TEORIA ============ -->
+<section id="teoria" class="tab-content active">
+
+  <div class="card">
+    <h2>1. Introdução às Estruturas de Dados</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Uma <b>estrutura de dados</b> é simplesmente uma <b>forma de organizar e guardar dados</b> para que depois seja fácil encontrar, usar e modificar esses dados. Nada mais do que isso.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia do dia a dia</strong>
+      Pense na sua cozinha. Você pode guardar os temperos de várias formas: <br>
+      • Numa <b>prateleira fixa com potes numerados</b> → você acha qualquer pote na hora (vetor/array).<br>
+      • Numa <b>caixa onde cada pote está amarrado a outro por um barbante</b> → você só acha o último seguindo o barbante desde o começo (lista encadeada).<br>
+      • Numa <b>pilha de pratos</b> → você só tira o de cima (pilha).<br>
+      • Numa <b>fila do banco</b> → o primeiro que chegou é o primeiro a ser atendido (fila).<br>
+      Todas guardam as mesmas coisas. O que muda é <b>como você insere, remove e acessa</b>.
+    </div>
+
+    <div class="box-conceito">
+      <strong>Toda estrutura tem 3 regras básicas</strong>
+      <b>1. Inserir</b> — como um novo dado entra.<br>
+      <b>2. Remover</b> — como um dado sai.<br>
+      <b>3. Acessar</b> — como eu chego até um dado específico.<br>
+      Se você entende essas 3 regras para cada estrutura, você entendeu a estrutura inteira. Em prova, quase toda questão é sobre uma dessas três coisas.
+    </div>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Sempre que estudar uma estrutura nova, faça uma tabela com 3 colunas: <i>Inserir</i>, <i>Remover</i>, <i>Acessar</i>. Preencha com o custo (rápido/lento) de cada operação. Isso resolve 90% das questões de múltipla escolha.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Listas</h2>
+
+    <h3>2.1 O que é uma lista?</h3>
+    <p>Uma <b>lista</b> é uma <b>coleção ordenada de itens</b>. "Ordenada" aqui significa que existe uma posição para cada item: o primeiro, o segundo, o terceiro... A ordem importa e você pode falar "me dá o item da posição 3".</p>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      Uma lista é como a <b>lista de chamada da professora</b>: tem o aluno 1, o aluno 2, o aluno 3... Se você tira o aluno 2 da chamada, os outros precisam ser renumerados (isso é exatamente o que acontece no vetor quando você remove alguém do meio!).
+    </div>
+
+    <h3>2.2 Lista com Vetor (Array)</h3>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Os itens ficam guardados em <b>gavetas de memória lado a lado</b>, uma colada na outra. Cada gaveta tem um número (índice): 0, 1, 2, 3...
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      É como um <b>armário de escaninho numerado</b>: escaninho 0, 1, 2, 3... Se você sabe o número, vai direto na porta certa e pega o que quer. Não precisa abrir as outras.
+    </div>
+
+    <h4>✅ Vantagem: acesso direto e instantâneo</h4>
+    <p>Quer o item da posição 2? Escreva <code>lista[2]</code> e pronto. Não importa se a lista tem 10 ou 10.000 itens — o tempo é o mesmo. Isso se chama <b>acesso direto por índice</b>.</p>
+
+    <h4>❌ Desvantagem 1: tamanho fixo</h4>
+    <p>O vetor nasce com um tamanho definido (<code>int lista[10];</code>). Se você precisar de 11 itens, problema. Se usar só 2, desperdiçou 8 espaços.</p>
+
+    <h4>❌ Desvantagem 2: inserir/remover no meio exige "empurrar" todo mundo</h4>
+    <p>Imagine o vetor <code>[10, 20, 30, 40, 50]</code> e queremos inserir <b>25</b> na posição 2 (entre o 20 e o 30):</p>
+    <ul>
+      <li>Primeiro abrimos espaço: o 50 vai para a posição 5, o 40 para a 4, o 30 para a 3.</li>
+      <li>Depois colocamos o 25 na posição 2.</li>
+      <li>Resultado: <code>[10, 20, 25, 30, 40, 50]</code>.</li>
+    </ul>
+    <p>Ou seja: <b>todos os elementos depois do ponto de inserção precisaram ser deslocados uma casa para a direita</b>. Se o vetor tem 1 milhão de itens e você insere na posição 0, você move 1 milhão de itens. Isso é lento.</p>
+    <p>Para <b>remover</b> do meio é o contrário: você tira o item e <b>desloca todo mundo para a esquerda</b> para fechar o buraco. O vetor nunca pode ter buraco no meio.</p>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova</strong>
+      "Qual o custo de inserir um elemento no <b>início</b> de um vetor de N posições?"<br>
+      A resposta é <b>O(N)</b> (ou "é preciso deslocar todos os elementos"), e NÃO "O(1)". Muita gente erra achando que inserir é sempre rápido. Inserir no <b>fim</b> (se ainda houver espaço) é O(1); inserir no <b>início ou no meio</b> é O(N).
+    </div>
+
+    <h3>2.3 Lista Simplesmente Encadeada</h3>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Em vez de gavetas coladas, temos <b>nós (nódulos) espalhados pela memória</b>, em lugares quaisquer. Cada nó guarda duas coisas:
+      <br>• o <b>dado</b> (o valor);
+      <br>• um <b>ponteiro</b> chamado <code>proximo</code>, que guarda <b>o endereço de memória do próximo nó</b>.
+      <br>Existe uma variável especial chamada <code>inicio</code> (ou <code>HEAD</code>) que guarda o endereço do primeiro nó. O último nó tem <code>proximo = NULL</code> (nada), indicando o fim.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      É uma <b>caça ao tesouro</b>. Você recebe a primeira pista (o HEAD). Cada pista diz onde está a próxima pista. Você <b>não pode pular direto para a quinta pista</b> — tem que seguir uma por uma, em ordem. A última pista diz "fim".
+    </div>
+
+    <h4>✅ Vantagens</h4>
+    <ul>
+      <li><b>Cresce dinamicamente:</b> você cria um nó novo só quando precisa. Não existe tamanho fixo.</li>
+      <li><b>Inserir e remover não exigem deslocar ninguém:</b> você só mexe em ponteiros (2 ou 3 linhas de código). Inserir no começo é instantâneo: O(1).</li>
+    </ul>
+
+    <h4>❌ Desvantagens</h4>
+    <ul>
+      <li><b>Acesso sequencial:</b> para chegar no 5º elemento, você <b>precisa começar no HEAD e andar nó por nó</b> até lá. Não existe <code>lista[4]</code>. Acesso é O(N).</li>
+      <li><b>Gasta memória extra:</b> cada nó carrega um ponteiro adicional.</li>
+      <li><b>Não dá para voltar:</b> na lista simplesmente encadeada você só anda para frente.</li>
+    </ul>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova</strong>
+      "Em uma lista encadeada, qual o tempo para acessar o último elemento?"<br>
+      <b>O(N)</b>, porque é preciso percorrer todos os nós desde o início. Já em um <b>vetor</b>, acessar o último elemento é <b>O(1)</b> (basta <code>lista[N-1]</code>). Essa troca de "inserção rápida × acesso rápido" é a essência da diferença entre as duas estruturas.
+    </div>
+
+    <h3>2.4 Lista Duplamente Encadeada</h3>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Igual à lista simplesmente encadeada, mas cada nó tem <b>DOIS ponteiros</b>:
+      <br>• <code>anterior</code> — aponta para o nó de trás;
+      <br>• <code>proximo</code> — aponta para o nó da frente.
+      <br>Normalmente guardamos também um <code>fim</code> (ou <code>TAIL</code>), que é o endereço do último nó.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      É como um <b>ônibus com corredor de dois sentidos</b>: você pode andar para a frente até o motorista ou para trás até a porta de saída. Na lista simplesmente encadeada, era um corredor de mão única — só ia para frente.
+    </div>
+
+    <h4>✅ Vantagens</h4>
+    <ul>
+      <li><b>Navegação nos dois sentidos:</b> dá para percorrer do início para o fim ou do fim para o início.</li>
+      <li><b>Remoção mais fácil:</b> se você já está no nó que quer remover, consegue achar o anterior rapidamente (sem precisar varrer a lista de novo).</li>
+      <li>Usando o <code>fim</code>, inserir no final também fica O(1).</li>
+    </ul>
+
+    <h4>⚖️ Trade-off (o preço a pagar)</h4>
+    <ul>
+      <li><b>Gasta mais memória:</b> cada nó tem um ponteiro extra em relação à lista simples.</li>
+      <li><b>Código mais delicado:</b> ao inserir ou remover, é preciso <b>atualizar 4 ponteiros</b> (dois do nó novo e dois dos vizinhos). Se esquecer um, a lista "quebra".</li>
+    </ul>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Desenhe sempre no papel: caixinhas para os nós e setas para os ponteiros. Ao inserir um nó no meio de uma lista dupla, desenhe as setas <b>antes</b> de escrever o código. Quem desenha, não erra.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Fila (Queue)</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      A fila segue a regra <b>FIFO</b> — <i>First In, First Out</i> — ou seja, <b>o primeiro que entra é o primeiro que sai</b>.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      A <b>fila do banco</b> ou a <b>fila do supermercado</b>. Quem chegou primeiro é atendido primeiro. Não existe "furar fila" na estrutura (e nem no banco, né?). Outro exemplo: a fila de impressão do computador — o primeiro documento enviado é o primeiro a ser impresso.
+    </div>
+
+    <h4>Operações principais</h4>
+    <ul>
+      <li><code>enfileirar</code> (enqueue): insere um item <b>no final</b> da fila.</li>
+      <li><code>desenfileirar</code> (dequeue): remove um item <b>do começo</b> (da frente) da fila.</li>
+      <li><code>frente</code> / <code>primeiro</code>: só <b>olha</b> quem é o primeiro, sem remover.</li>
+    </ul>
+
+    <h4>Variáveis de controle</h4>
+    <ul>
+      <li><code>frente</code> — índice de quem está na frente (o próximo a sair).</li>
+      <li><code>final</code> — índice de onde o próximo item vai entrar.</li>
+      <li>(na fila circular) <code>total</code> — quantos itens existem agora.</li>
+    </ul>
+
+    <h3>3.1 Problema da Fila Linear</h3>
+    <p>Imagine um vetor de 5 posições usado como fila:</p>
+    <pre><code class="language-text">[ ][ ][ ][ ][ ]
+ 0  1  2  3  4</code></pre>
+    <p>Enfileiramos A, B, C:</p>
+    <pre><code class="language-text">[A][B][C][ ][ ]
+ 0  1  2  3  4    frente=0, final=3</code></pre>
+    <p>Agora desenfileiramos A e B:</p>
+    <pre><code class="language-text">[ ][ ][C][ ][ ]
+ 0  1  2  3  4    frente=2, final=3</code></pre>
+    <p>Perceba: as posições 0 e 1 estão <b>vazias e desperdiçadas</b>. Se agora tentarmos enfileirar D, E, F, G... o <code>final</code> chegará na posição 5 e a fila dirá "cheia!", mesmo tendo dois espaços livres lá atrás. <b>Esse é o grande problema da fila linear.</b></p>
+
+    <h3>3.2 Fila Circular (a solução)</h3>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      A fila circular trata o vetor como se fosse um <b>círculo</b>: quando o <code>final</code> chega na última posição, ele <b>volta para a posição 0</b>. Assim, os espaços vazios da frente são reaproveitados.
+    </div>
+
+    <p>O truque é o operador de <b>resto da divisão (módulo) <code>%</code></b>:</p>
+    <pre><code class="language-c">final = (final + 1) % TAMANHO;</code></pre>
+    <p>Se <code>TAMANHO = 5</code>:</p>
+    <ul>
+      <li><code>final = 3</code> → (3+1) % 5 = <b>4</b></li>
+      <li><code>final = 4</code> → (4+1) % 5 = <b>0</b> &nbsp;← deu a volta!</li>
+      <li><code>final = 0</code> → (0+1) % 5 = <b>1</b></li>
+    </ul>
+    <p>O mesmo vale para a <code>frente</code> ao desenfileirar:</p>
+    <pre><code class="language-c">frente = (frente + 1) % TAMANHO;</code></pre>
+
+    <div class="box-analogia">
+      <strong>Analogia</strong>
+      É como uma <b>mesa redonda de restaurante</b>. Os garçons servem na cadeira 0, 1, 2, 3, 4 e depois voltam para a cadeira 0 — porque a mesa é redonda, não tem "fim". A fila circular faz isso com o vetor.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova</strong>
+      Fila circular com <code>TAMANHO = 5</code> e <code>final = 4</code>. Após um <code>enfileirar</code>, o novo valor de <code>final</code> é...<br>
+      Resposta: <b>0</b>. Porque (4 + 1) % 5 = 0. Muita gente responde 5 — mas a posição 5 <b>não existe</b> em um vetor de 0 a 4! Esse erro é clássico.
+    </div>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Sempre confira <b>como o "cheio" e o "vazio" são detectados</b> na sua implementação. O jeito mais simples e à prova de erro é guardar um contador <code>total</code>: fila vazia é <code>total == 0</code>, fila cheia é <code>total == TAMANHO</code>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Pilha (Stack)</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      A pilha segue a regra <b>LIFO</b> — <i>Last In, First Out</i> — ou seja, <b>o último que entra é o primeiro que sai</b>.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogias (tem várias!)</strong>
+      • <b>Pilha de pratos:</b> você coloca um prato em cima e tira o de cima. Ninguém tira o prato do fundo sem tirar os de cima.<br>
+      • <b>Botão desfazer (Ctrl+Z):</b> a última coisa que você fez é a primeira a ser desfeita.<br>
+      • <b>Botão voltar do navegador:</b> volta para a última página que você visitou.<br>
+      • <b>Chamadas de função na recursão:</b> o computador guarda na pilha "onde eu estava" antes de chamar a próxima função.
+    </div>
+
+    <h4>Operações principais</h4>
+    <ul>
+      <li><code>empilhar</code> / <code>push</code>: coloca um item <b>no topo</b>.</li>
+      <li><code>desempilhar</code> / <code>pop</code>: <b>remove</b> o item do topo e o devolve.</li>
+      <li><code>topo</code> / <code>peek</code>: <b>apenas olha</b> qual é o item do topo, <b>sem remover</b>.</li>
+      <li><code>vazia</code> / <code>cheia</code>: verificações de segurança antes de operar.</li>
+    </ul>
+
+    <h4>Variável de controle</h4>
+    <p><code>topo</code> — um número inteiro que indica o <b>índice da última posição ocupada</b>. Quando a pilha está vazia, usamos <code>topo = -1</code>.</p>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova nº 1</strong>
+      <b><code>topo()</code> / <code>peek()</code> NÃO remove nada!</b> Ele só devolve o valor do topo. Quem remove é <code>pop()</code> / <code>desempilhar()</code>. Essa é a pegadinha mais comum de todas em provas de pilha. Se a questão diz "a operação <code>topo()</code> remove o elemento do topo", ela é <b>FALSA</b>.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova nº 2</strong>
+      "Empilhar é sempre O(1)?" Sim, <b>na pilha com vetor</b>, desde que haja espaço — só mexemos no índice <code>topo</code> e não deslocamos ninguém. Diferente do vetor comum, onde inserir no meio é O(N).
+    </div>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Grave as siglas: <b>FIFO = Fila</b> (First In, First Out) e <b>LIFO = Pilha</b> (Last In, First Out). Em prova, muitas vezes basta identificar se a situação é "fila de banco" (FIFO) ou "pilha de pratos" (LIFO).
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Grafos</h2>
+
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Um <b>grafo</b> é um conjunto de <b>vértices</b> (também chamados de nós) ligados por <b>arestas</b> (as linhas que conectam). Ou seja: pontos e ligações.
+    </div>
+
+    <div class="box-analogia">
+      <strong>Analogias</strong>
+      • <b>Rede social:</b> cada pessoa é um vértice; a amizade entre duas pessoas é uma aresta.<br>
+      • <b>Mapa de ruas:</b> cada cruzamento é um vértice; cada rua é uma aresta.<br>
+      • <b>Rede de computadores:</b> cada computador é um vértice; cada cabo é uma aresta.<br>
+      • <b>Rota de ônibus:</b> cada parada é um vértice; cada trecho é uma aresta.
+    </div>
+
+    <h3>5.1 Tipos de grafo</h3>
+    <ul>
+      <li><b>Não direcionado (não dirigido):</b> a ligação vale nos dois sentidos. Se A é amigo de B, B é amigo de A. A aresta é uma linha simples.</li>
+      <li><b>Direcionado (dígrafo):</b> a ligação tem uma seta, ou seja, uma direção. Exemplo: no Instagram, você <i>segue</i> alguém, mas essa pessoa pode não te seguir. A aresta A → B não garante B → A.</li>
+    </ul>
+
+    <h3>5.2 Formas de representar um grafo no computador</h3>
+
+    <h4>a) Matriz de Adjacência</h4>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Uma <b>grade (tabela) quadrada</b> onde <code>mat[i][j] = 1</code> significa "existe ligação do vértice i para o vértice j", e <code>mat[i][j] = 0</code> significa "não existe ligação".
+    </div>
+    <p>Exemplo com 3 vértices (0, 1, 2), onde 0 liga em 1 e 1 liga em 2:</p>
+    <table>
+      <tr><th></th><th>0</th><th>1</th><th>2</th></tr>
+      <tr><td><b>0</b></td><td>0</td><td>1</td><td>0</td></tr>
+      <tr><td><b>1</b></td><td>0</td><td>0</td><td>1</td></tr>
+      <tr><td><b>2</b></td><td>0</td><td>0</td><td>0</td></tr>
+    </table>
+    <ul>
+      <li>✅ <b>Vantagem:</b> verificar se existe ligação entre i e j é instantâneo — basta olhar <code>mat[i][j]</code>. É O(1).</li>
+      <li>❌ <b>Desvantagem:</b> gasta muita memória. Com 1.000 vértices, a matriz tem 1.000 × 1.000 = 1.000.000 de posições, mesmo que existam só 5 ligações. A maioria das posições fica com 0, "desperdiçado".</li>
+    </ul>
+
+    <h4>b) Lista de Adjacência</h4>
+    <div class="box-conceito">
+      <strong>Conceito</strong>
+      Para cada vértice, guardamos <b>uma listinha apenas com os vizinhos dele</b>. Se o vértice 0 só se liga ao 1, a lista do vértice 0 tem só um item.
+    </div>
+    <p>O mesmo exemplo acima ficaria assim:</p>
+    <pre><code class="language-text">0 -> 1
+1 -> 2
+2 -> (vazia)</code></pre>
+    <ul>
+      <li>✅ <b>Vantagem:</b> economiza muita memória quando o grafo tem <b>poucas ligações</b> (o que é comum no mundo real).</li>
+      <li>✅ Também é mais rápido para percorrer "todos os vizinhos de um vértice", que é o que quase todo algoritmo de grafo faz.</li>
+      <li>❌ <b>Desvantagem:</b> para saber se existe ligação entre i e j, é preciso percorrer a lista de i procurando j. Não é instantâneo como na matriz.</li>
+    </ul>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha de prova</strong>
+      "Quando usar matriz e quando usar lista de adjacência?"<br>
+      • <b>Grafo denso</b> (muitas ligações, quase todos conectados com todos) → <b>Matriz</b>, porque a lista teria listas gigantes e a matriz não desperdiça tanto.<br>
+      • <b>Grafo esparso</b> (poucas ligações em relação ao total possível) → <b>Lista de adjacência</b>, porque economiza memória.<br>
+      Se a questão falar "grafo com poucas arestas", a resposta certa quase sempre é <b>lista de adjacência</b>.
+    </div>
+
+    <div class="box-dica">
+      <strong>Dica de estudo</strong>
+      Antes de responder qualquer questão de grafo, desenhe os pontinhos e as linhas. Depois, desenhe a matriz e a lista ao lado. A resposta costuma aparecer na hora, sem esforço.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>6. Pegadinhas de Prova — Resumo das Armadilhas</h2>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 1 — Inserir no meio do vetor</strong>
+      Inserir no início ou no meio de um <b>vetor</b> exige <b>deslocar todos os elementos seguintes</b>. É O(N). Só inserir no fim (com espaço livre) é O(1). Não confunda com a lista encadeada, onde inserir é rápido.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 2 — <code>peek()</code> / <code>topo()</code> versus <code>pop()</code> / <code>desempilhar()</code></strong>
+      <code>topo()</code> e <code>peek()</code> apenas <b>espiam</b> o valor do topo — a pilha continua do mesmo tamanho.<br>
+      <code>pop()</code> e <code>desempilhar()</code> <b>removem</b> o elemento — a pilha diminui em 1.<br>
+      Se a questão disser que <code>topo()</code> remove, está <b>errada</b>.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 3 — Fila circular e o <code>%</code></strong>
+      Em uma fila circular de tamanho TAM, depois de <code>final = TAM - 1</code>, o próximo <code>final</code> é <b>0</b>, porque <code>(TAM-1 + 1) % TAM = 0</code>. Se a questão perguntar sobre a posição de índice TAM, a resposta é: <b>essa posição não existe</b>.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 4 — Acesso sequencial versus acesso direto</strong>
+      <b>Vetor:</b> acesso direto pelo índice <code>v[4]</code> → O(1).<br>
+      <b>Lista encadeada:</b> para chegar ao 5º elemento é preciso <b>percorrer nó por nó desde o HEAD</b> → O(N). Nunca escreva <code>lista[4]</code> em lista encadeada!
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 5 — FIFO e LIFO trocados</strong>
+      Fila = FIFO = primeiro que entra, primeiro que sai (fila de banco).<br>
+      Pilha = LIFO = último que entra, primeiro que sai (pilha de pratos).<br>
+      Trocar as duas siglas é o erro mais bobo e mais fatal.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Armadilha 6 — Esquecer de verificar vazia/cheia</strong>
+      Toda função de <code>empilhar</code>, <code>desempilhar</code>, <code>enfileirar</code> e <code>desenfileirar</code> deve checar se a estrutura está cheia ou vazia <b>antes</b> de mexer nos índices. Em prova, questões que mostram código sem essa verificação estão testando se você percebe o risco de <b>estouro de índice</b> (acessar posição inválida).
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ EXEMPLOS ============ -->
+<section id="exemplos" class="tab-content">
+
+  <div class="card">
+    <h2>Exemplo 1 — Inserir no meio: Vetor versus Lista Encadeada</h2>
+    <p>Objetivo: inserir o valor <b>25</b> entre o <b>20</b> e o <b>30</b>.</p>
+
+    <h3>1.A — Usando VETOR (com deslocamento)</h3>
+    <p>Situação inicial:</p>
+    <pre><code class="language-text">Índice:  0    1    2    3    4    5
+Valor:  10   20   30   40   50    -</code></pre>
+
+    <p><b>Passo 1:</b> precisamos abrir espaço na posição 2. Vamos do fim para o começo, empurrando cada elemento uma casa para a direita.</p>
+    <table class="trace-table">
+      <tr><th>Passo</th><th>Ação</th><th>Resultado do vetor</th></tr>
+      <tr><td>1</td><td>Mover posição 4 (50) para a posição 5</td><td>10, 20, 30, 40, 50, 50</td></tr>
+      <tr><td>2</td><td>Mover posição 3 (40) para a posição 4</td><td>10, 20, 30, 40, 40, 50</td></tr>
+      <tr><td>3</td><td>Mover posição 2 (30) para a posição 3</td><td>10, 20, 30, 30, 40, 50</td></tr>
+      <tr><td class="hl">4</td><td class="hl">Colocar 25 na posição 2</td><td class="hl">10, 20, 25, 30, 40, 50 ✅</td></tr>
+    </table>
+    <p><b>Conclusão:</b> 3 deslocamentos aconteceram. Se o vetor tivesse 1.000 elementos e a inserção fosse na posição 0, seriam 1.000 deslocamentos. Custo: <b>O(N)</b>.</p>
+
+    <h3>1.B — Usando LISTA SIMPLESMENTE ENCADEADA (só ponteiros)</h3>
+    <p>Situação inicial (cada nó tem valor + ponteiro para o próximo):</p>
+    <pre><code class="language-text">HEAD -> [10|*] -> [20|*] -> [30|*] -> [40|*] -> [50|NULL]</code></pre>
+
+    <p>Queremos inserir 25 entre o nó do 20 e o nó do 30. Digamos que já temos um ponteiro <code>aux</code> apontando para o nó do 20.</p>
+    <table class="trace-table">
+      <tr><th>Passo</th><th>Ação</th><th>Efeito</th></tr>
+      <tr><td>1</td><td>Criar um nó novo com valor 25</td><td>novo = [25|?]</td></tr>
+      <tr><td>2</td><td>novo-&gt;proximo = aux-&gt;proximo</td><td>O novo nó aponta para o nó do 30</td></tr>
+      <tr><td class="hl">3</td><td class="hl">aux-&gt;proximo = novo</td><td class="hl">O nó do 20 passa a apontar para o novo nó</td></tr>
+    </table>
+    <p>Resultado final:</p>
+    <pre><code class="language-text">HEAD -> [10|*] -> [20|*] -> [25|*] -> [30|*] -> [40|*] -> [50|NULL]</code></pre>
+    <p><b>Conclusão:</b> nenhum elemento foi "empurrado". Mexemos em apenas <b>2 ponteiros</b>. A inserção em si é <b>O(1)</b> — o único custo extra é o tempo de caminhar até a posição (que é O(N) se não tivermos o ponteiro do local).</p>
+
+    <div class="box-dica">
+      <strong>Dica</strong>
+      Repare na <b>ordem das operações</b> no passo 2 e 3: primeiro ligamos o nó novo ao próximo, e <b>só depois</b> ligamos o nó anterior ao nó novo. Se fizer ao contrário, você perde a referência do resto da lista. Isso cai em prova!
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exemplo 2 — Fila (Linear): traço passo a passo</h2>
+    <p>Fila de tamanho 5, inicialmente vazia: <code>frente = 0</code>, <code>final = 0</code>, <code>total = 0</code>.</p>
+
+    <table class="trace-table">
+      <tr><th>#</th><th>Operação</th><th>Conteúdo do vetor</th><th>frente</th><th>final</th><th>total</th></tr>
+      <tr><td>0</td><td>— (início)</td><td>[ , , , , ]</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>1</td><td>enfileirar(10)</td><td>[10, , , , ]</td><td>0</td><td>1</td><td>1</td></tr>
+      <tr><td>2</td><td>enfileirar(20)</td><td>[10, 20, , , ]</td><td>0</td><td>2</td><td>2</td></tr>
+      <tr><td>3</td><td>enfileirar(30)</td><td>[10, 20, 30, , ]</td><td>0</td><td>3</td><td>3</td></tr>
+      <tr><td class="hl">4</td><td class="hl">desenfileirar() → devolve 10</td><td class="hl">[ , 20, 30, , ]</td><td class="hl">1</td><td class="hl">3</td><td class="hl">2</td></tr>
+      <tr><td class="hl">5</td><td class="hl">desenfileirar() → devolve 20</td><td class="hl">[ , , 30, , ]</td><td class="hl">2</td><td class="hl">3</td><td class="hl">1</td></tr>
+      <tr><td>6</td><td>enfileirar(40)</td><td>[ , , 30, 40, ]</td><td>2</td><td>4</td><td>2</td></tr>
+      <tr><td>7</td><td>enfileirar(50)</td><td>[ , , 30, 40, 50]</td><td>2</td><td>5 (fim do vetor!)</td><td>3</td></tr>
+    </table>
+
+    <p>Observe no passo 7: o <code>final</code> chegou a 5, que é <b>fora do vetor</b> (válido de 0 a 4). Na fila <b>linear</b>, isso significa problema: não há mais como avançar, mesmo com as posições 0 e 1 vazias. Esse é o desperdício clássico.</p>
+
+    <div class="box-pegadinha">
+      <strong>Atenção</strong>
+      Repare que a "frente" da fila agora é o índice 2 (onde está o 30). Se a questão perguntar "quem é o primeiro da fila?", a resposta é <b>30</b>, não 10 nem 20 — eles já foram desenfileirados.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exemplo 3 — Fila Circular: a volta com o <code>%</code></h2>
+    <p>Mesma fila, mas agora <b>circular</b>, com <code>TAMANHO = 5</code>. Continuando de uma situação onde <code>final = 4</code>:</p>
+
+    <table class="trace-table">
+      <tr><th>#</th><th>Operação</th><th>Cálculo do índice</th><th>Conteúdo do vetor</th><th>frente</th><th>final</th><th>total</th></tr>
+      <tr><td>0</td><td>— (início)</td><td>—</td><td>[ , , 30, 40, 50]</td><td>2</td><td>4</td><td>3</td></tr>
+      <tr><td>1</td><td>enfileirar(60)</td><td>grava em 4; final = (4+1)%5 = <b>0</b></td><td>[ , , 30, 40, 60]</td><td>2</td><td>0</td><td>4</td></tr>
+      <tr><td>2</td><td>enfileirar(70)</td><td>grava em 0; final = (0+1)%5 = <b>1</b></td><td>[70, , 30, 40, 60]</td><td>2</td><td>1</td><td>5 (CHEIA)</td></tr>
+      <tr><td class="hl">3</td><td class="hl">desenfileirar() → 30</td><td class="hl">lê em 2; frente = (2+1)%5 = 3</td><td class="hl">[70, , , 40, 60]</td><td class="hl">3</td><td class="hl">1</td><td class="hl">4</td></tr>
+      <tr><td class="hl">4</td><td class="hl">desenfileirar() → 40</td><td class="hl">lê em 3; frente = (3+1)%5 = 4</td><td class="hl">[70, , , , 60]</td><td class="hl">4</td><td class="hl">1</td><td class="hl">3</td></tr>
+      <tr><td>5</td><td>enfileirar(80)</td><td>grava em 1; final = (1+1)%5 = 2</td><td>[70, 80, , , 60]</td><td>4</td><td>2</td><td>4</td></tr>
+    </table>
+
+    <p><b>Interpretação:</b> mesmo com <code>final</code> menor que <code>frente</code> (2 &lt; 4), a fila está funcionando perfeitamente! Os elementos estão em ordem lógica: 60, 70, 80. Isso mostra que na fila circular <b>não podemos comparar <code>frente</code> e <code>final</code> para saber se está cheia</b> — é exatamente por isso que usamos o contador <code>total</code>.</p>
+
+    <div class="box-pegadinha">
+      <strong>Pegadinha</strong>
+      "Se <code>final == frente</code>, a fila está vazia ou cheia?" Na implementação sem contador, <b>ambos os casos</b> dão <code>final == frente</code> — é ambíguo! Por isso se usa <code>total</code> (ou se deixa uma posição sempre vazia). Se a prova mostrar esse código sem contador, é uma armadilha.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exemplo 4 — Pilha: push, pop e peek executados</h2>
+    <p>Pilha de tamanho 5, inicialmente vazia (<code>topo = -1</code>).</p>
+
+    <table class="trace-table">
+      <tr><th>#</th><th>Operação</th><th>O que acontece</th><th>Estado (base → topo)</th><th>topo</th></tr>
+      <tr><td>0</td><td>—</td><td>Pilha vazia</td><td>[ , , , , ]</td><td>-1</td></tr>
+      <tr><td>1</td><td>empilhar(7)</td><td>topo vira 0; grava 7</td><td>[7, , , , ]</td><td>0</td></tr>
+      <tr><td>2</td><td>empilhar(14)</td><td>topo vira 1; grava 14</td><td>[7, 14, , , ]</td><td>1</td></tr>
+      <tr><td>3</td><td>empilhar(21)</td><td>topo vira 2; grava 21</td><td>[7, 14, 21, , ]</td><td>2</td></tr>
+      <tr><td class="hl">4</td><td class="hl">topo() / peek() → devolve <b>21</b></td><td class="hl">SÓ OLHA. Nada é removido!</td><td class="hl">[7, 14, 21, , ]</td><td class="hl">2 (não mudou)</td></tr>
+      <tr><td>5</td><td>desempilhar() → devolve <b>21</b></td><td>topo desce para 1</td><td>[7, 14, , , ]</td><td>1</td></tr>
+      <tr><td>6</td><td>empilhar(28)</td><td>topo vira 2; grava 28</td><td>[7, 14, 28, , ]</td><td>2</td></tr>
+      <tr><td>7</td><td>desempilhar() → devolve <b>28</b></td><td>topo desce para 1</td><td>[7, 14, , , ]</td><td>1</td></tr>
+      <tr><td>8</td><td>desempilhar() → devolve <b>14</b></td><td>topo desce para 0</td><td>[7, , , , ]</td><td>0</td></tr>
+      <tr><td>9</td><td>desempilhar() → devolve <b>7</b></td><td>topo desce para -1</td><td>[ , , , , ]</td><td>-1</td></tr>
+      <tr><td>10</td><td>desempilhar()</td><td>PILHA VAZIA! Deve retornar erro/aviso</td><td>[ , , , , ]</td><td>-1</td></tr>
+    </table>
+
+    <p><b>Observação importante sobre o passo 4:</b> o valor devolvido por <code>topo()</code> foi 21 — o mesmo valor que o <code>desempilhar()</code> do passo 5 devolveu. Mas há uma diferença fundamental: no passo 4 a pilha <b>continuou com 3 elementos</b>; no passo 5 ela ficou com 2. O <code>topo()</code> foi apenas uma "espiada".</p>
+
+    <div class="box-dica">
+      <strong>Dica</strong>
+      Quando a questão pedir "qual valor é retornado pela sequência de operações", resolva <b>desenhando a pilha a cada linha</b>, como na tabela acima. Nunca tente fazer de cabeça — é onde os erros acontecem.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exemplo 5 — Comparando representações de grafo na prática</h2>
+    <p>Grafo com 5 vértices (0 a 4) e apenas 4 arestas: 0–1, 0–2, 1–3, 3–4.</p>
+
+    <h3>Matriz de adjacência (5 × 5 = 25 posições)</h3>
+    <table>
+      <tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+      <tr><td><b>0</b></td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+      <tr><td><b>1</b></td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+      <tr><td><b>2</b></td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td><b>3</b></td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+      <tr><td><b>4</b></td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    </table>
+    <p>São 25 posições, das quais apenas <b>8</b> estão preenchidas com 1 (4 arestas × 2 sentidos, pois o grafo é não direcionado). Ou seja, <b>17 posições são zeros desperdiçados</b>.</p>
+
+    <h3>Lista de adjacência (apenas o necessário)</h3>
+    <pre><code class="language-text">0 -> 1 -> 2
+1 -> 0 -> 3
+2 -> 0
+3 -> 1 -> 4
+4 -> 3</code></pre>
+    <p>Guardamos exatamente <b>8 registros de vizinhança</b>, nada mais. Nenhum zero desperdiçado.</p>
+
+    <div class="box-conceito">
+      <strong>Conclusão do exemplo</strong>
+      Para saber se 0 e 4 estão ligados: na <b>matriz</b>, basta olhar <code>mat[0][4]</code> e ver o 0 — instantâneo. Na <b>lista</b>, é preciso percorrer a lista do vértice 0 (1, 2) e não achar o 4 — um pouco mais lento. Mas a lista gastou muito menos memória. É sempre esse equilíbrio: <b>velocidade de consulta × economia de memória</b>.
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ CÓDIGO ============ -->
+<section id="codigo" class="tab-content">
+
+  <div class="card">
+    <h2>1. O nó da lista encadeada (a peça básica)</h2>
+    <p>Todo nó tem um valor e um ponteiro para o próximo nó. É a estrutura mais importante de todas — pilha, fila e lista de adjacência podem ser construídas com ela.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Um no da lista: guarda um valor e o endereco do proximo no
+typedef struct No {
+    int valor;          // o dado guardado
+    struct No *proximo; // ponteiro para o proximo no
+} No;
+
+No *inicio = NULL; // HEAD: comeca vazio (NULL = nada)
+
+// Insere um valor no INICIO da lista (bem rapido: O(1))
+void inserirInicio(int v) {
+    No *novo = malloc(sizeof(No)); // 1. cria o no
+    novo-&gt;valor = v;               // 2. guarda o valor
+    novo-&gt;proximo = inicio;        // 3. aponta para o antigo primeiro
+    inicio = novo;                 // 4. agora ele e o primeiro
+}
+
+// Percorre a lista do inicio ao fim e imprime
+void imprimir(void) {
+    No *aux = inicio;              // comeca pelo primeiro
+    while (aux != NULL) {          // enquanto houver no
+        printf("%d -&gt; ", aux-&gt;valor);
+        aux = aux-&gt;proximo;        // anda para o proximo
+    }
+    printf("NULL\n");
+}
+
+int main(void) {
+    inserirInicio(30);
+    inserirInicio(20);
+    inserirInicio(10);
+    imprimir();  // saida: 10 -&gt; 20 -&gt; 30 -&gt; NULL
+    return 0;
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>2. Lista duplamente encadeada (o nó com dois ponteiros)</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// O no agora tem DUAS setas: uma para tras e uma para frente
+typedef struct No {
+    int valor;           // o dado
+    struct No *anterior; // aponta para o no de tras
+    struct No *proximo;  // aponta para o no da frente
+} No;
+
+No *inicio = NULL; // primeiro no
+No *fim = NULL;    // ultimo no
+
+// Insere no INICIO da lista dupla
+void inserirInicio(int v) {
+    No *novo = malloc(sizeof(No));
+    novo-&gt;valor = v;
+    novo-&gt;anterior = NULL;  // e o primeiro, entao nao tem ninguem atras
+    novo-&gt;proximo = inicio; // aponta para o antigo primeiro
+
+    if (inicio != NULL) {   // se a lista NAO estava vazia
+        inicio-&gt;anterior = novo; // o antigo primeiro olha para tras e ve o novo
+    } else {
+        fim = novo;         // lista estava vazia: o novo e tambem o ultimo
+    }
+    inicio = novo;          // o novo passa a ser o primeiro
+}
+
+// Imprime do inicio ate o fim
+void imprimirFrente(void) {
+    No *aux = inicio;
+    while (aux != NULL) {
+        printf("%d -&gt; ", aux-&gt;valor);
+        aux = aux-&gt;proximo;
+    }
+    printf("NULL\n");
+}
+
+// Imprime do fim ate o inicio (so e possivel na lista DUPLA!)
+void imprimirTras(void) {
+    No *aux = fim;
+    while (aux != NULL) {
+        printf("%d -&gt; ", aux-&gt;valor);
+        aux = aux-&gt;anterior;
+    }
+    printf("NULL\n");
+}
+
+int main(void) {
+    inserirInicio(30);
+    inserirInicio(20);
+    inserirInicio(10);
+    imprimirFrente(); // 10 -&gt; 20 -&gt; 30 -&gt; NULL
+    imprimirTras();   // 30 -&gt; 20 -&gt; 10 -&gt; NULL
+    return 0;
+}</code></pre>
+    <div class="box-dica">
+      <strong>Dica</strong>
+      Note que a lista dupla consegue andar para os dois lados — por isso a função <code>imprimirTras</code> existe. Na lista simples, isso seria impossível sem percorrer tudo de novo.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Pilha (Stack) — LIFO com vetor</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define TAM 5 // tamanho maximo da pilha
+
+// A pilha tem os dados e um indice que marca o topo
+typedef struct {
+    int dados[TAM];
+    int topo;      // indice do ultimo elemento colocado
+} Pilha;
+
+// Prepara a pilha para uso: topo = -1 significa VAZIA
+void iniciar(Pilha *p) {
+    p-&gt;topo = -1;
+}
+
+// Retorna 1 se a pilha estiver vazia, 0 caso contrario
+int vazia(Pilha *p) {
+    return p-&gt;topo == -1;
+}
+
+// Retorna 1 se a pilha estiver cheia, 0 caso contrario
+int cheia(Pilha *p) {
+    return p-&gt;topo == TAM - 1; // ultimo indice valido e TAM-1
+}
+
+// EMPILHAR: coloca um valor no topo
+void empilhar(Pilha *p, int valor) {
+    if (cheia(p)) {
+        printf("Pilha cheia! Nao da para empilhar %d\n", valor);
+        return;
+    }
+    p-&gt;topo++;                 // sobe o topo uma casa
+    p-&gt;dados[p-&gt;topo] = valor; // guarda o valor ali
+    printf("Empilhou %d\n", valor);
+}
+
+// DESEMPILHAR: tira o valor do topo e devolve ele
+int desempilhar(Pilha *p) {
+    if (vazia(p)) {
+        printf("Pilha vazia! Nada para desempilhar\n");
+        return -1; // -1 e um aviso de erro
+    }
+    int valor = p-&gt;dados[p-&gt;topo]; // pega o valor do topo
+    p-&gt;topo--;                     // desce o topo uma casa
+    return valor;
+}
+
+// TOPO (peek): SO OLHA o valor do topo, NAO remove nada
+int topo(Pilha *p) {
+    if (vazia(p)) {
+        printf("Pilha vazia!\n");
+        return -1;
+    }
+    return p-&gt;dados[p-&gt;topo]; // devolve sem mexer no indice
+}
+
+int main(void) {
+    Pilha p;
+    iniciar(&amp;p);
+
+    empilhar(&amp;p, 7);
+    empilhar(&amp;p, 14);
+    empilhar(&amp;p, 21);
+
+    printf("Topo (so olhando): %d\n", topo(&amp;p));   // 21, pilha intacta
+
+    printf("Desempilhou: %d\n", desempilhar(&amp;p)); // 21
+    printf("Desempilhou: %d\n", desempilhar(&amp;p)); // 14
+
+    printf("Topo agora: %d\n", topo(&amp;p));          // 7
+
+    return 0;
+}</code></pre>
+    <div class="box-pegadinha">
+      <strong>Lembre</strong>
+      <code>topo()</code> devolve o valor mas <b>não mexe em <code>p-&gt;topo</code></b>. Já <code>desempilhar()</code> faz <code>p-&gt;topo--</code>. Essa é a única diferença entre os dois no código — e é justamente o que cai na prova.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Fila Circular — FIFO com reaproveitamento de espaço</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define TAM 5 // tamanho maximo da fila
+
+// A fila tem os dados, a frente, o final e um contador
+typedef struct {
+    int dados[TAM];
+    int frente; // indice de quem vai SAIR
+    int final;  // indice de onde o proximo VAI ENTRAR
+    int total;  // quantos itens tem agora
+} Fila;
+
+// Prepara a fila: tudo zerado e vazia
+void iniciar(Fila *f) {
+    f-&gt;frente = 0;
+    f-&gt;final = 0;
+    f-&gt;total = 0;
+}
+
+// Retorna 1 se a fila estiver vazia
+int vazia(Fila *f) {
+    return f-&gt;total == 0;
+}
+
+// Retorna 1 se a fila estiver cheia
+int cheia(Fila *f) {
+    return f-&gt;total == TAM;
+}
+
+// ENFILEIRAR: entra sempre no FINAL
+void enfileirar(Fila *f, int valor) {
+    if (cheia(f)) {
+        printf("Fila cheia! Nao da para enfileirar %d\n", valor);
+        return;
+    }
+    f-&gt;dados[f-&gt;final] = valor;         // guarda no final
+    f-&gt;final = (f-&gt;final + 1) % TAM;    // avanca e da a volta se precisar
+    f-&gt;total++;                         // mais um item
+    printf("Enfileirou %d\n", valor);
+}
+
+// DESENFILEIRAR: sai sempre da FRENTE
+int desenfileirar(Fila *f) {
+    if (vazia(f)) {
+        printf("Fila vazia! Nada para desenfileirar\n");
+        return -1;
+    }
+    int valor = f-&gt;dados[f-&gt;frente];     // pega quem esta na frente
+    f-&gt;frente = (f-&gt;frente + 1) % TAM;  // avanca a frente e da a volta
+    f-&gt;total--;                         // menos um item
+    return valor;
+}
+
+// FRENTE (peek): so olha quem e o primeiro, sem remover
+int primeiro(Fila *f) {
+    if (vazia(f)) {
+        printf("Fila vazia!\n");
+        return -1;
+    }
+    return f-&gt;dados[f-&gt;frente]; // devolve sem mexer no indice
+}
+
+int main(void) {
+    Fila f;
+    iniciar(&amp;f);
+
+    enfileirar(&amp;f, 10);
+    enfileirar(&amp;f, 20);
+    enfileirar(&amp;f, 30);
+    enfileirar(&amp;f, 40);
+    enfileirar(&amp;f, 50);
+
+    printf("Primeiro da fila: %d\n", primeiro(&amp;f)); // 10
+
+    printf("Saiu: %d\n", desenfileirar(&amp;f)); // 10
+    printf("Saiu: %d\n", desenfileirar(&amp;f)); // 20
+
+    // Agora tem espaco! A fila circular reaproveita as posicoes 0 e 1
+    enfileirar(&amp;f, 60); // entra na posicao 0 (deu a volta!)
+    enfileirar(&amp;f, 70); // entra na posicao 1
+
+    printf("Primeiro agora: %d\n", primeiro(&amp;f)); // 30
+
+    return 0;
+}</code></pre>
+    <div class="box-dica">
+      <strong>Dica</strong>
+      O segredo da fila circular está em <b>duas linhas</b>: <code>final = (final + 1) % TAM;</code> e <code>frente = (frente + 1) % TAM;</code>. Se você entender por que o <code>%</code> faz o índice "dar a volta", você entendeu a fila circular inteira.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Grafo — Matriz de Adjacência</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define V 5 // numero de vertices do grafo
+
+// A matriz: mat[i][j] = 1 significa "i esta ligado a j"
+int mat[V][V];
+
+// Zera a matriz inteira (nenhuma ligacao)
+void iniciar(void) {
+    int i, j;
+    for (i = 0; i &lt; V; i++) {
+        for (j = 0; j &lt; V; j++) {
+            mat[i][j] = 0;
+        }
+    }
+}
+
+// Cria uma ligacao entre a e b (grafo NAO direcionado)
+void ligar(int a, int b) {
+    mat[a][b] = 1; // a liga em b
+    mat[b][a] = 1; // e b liga em a (dois sentidos)
+}
+
+// Mostra a matriz na tela
+void mostrar(void) {
+    int i, j;
+    printf("   ");
+    for (j = 0; j &lt; V; j++) printf("%d ", j);
+    printf("\n");
+    for (i = 0; i &lt; V; i++) {
+        printf("%d: ", i);
+        for (j = 0; j &lt; V; j++) {
+            printf("%d ", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Verifica se existe ligacao (consulta instantanea!)
+int existeLigacao(int a, int b) {
+    return mat[a][b] == 1;
+}
+
+int main(void) {
+    iniciar();
+    ligar(0, 1);
+    ligar(0, 2);
+    ligar(1, 3);
+    ligar(3, 4);
+
+    mostrar();
+    printf("0 liga em 1? %d\n", existeLigacao(0, 1)); // 1 (sim)
+    printf("0 liga em 4? %d\n", existeLigacao(0, 4)); // 0 (nao)
+    return 0;
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>6. Grafo — Lista de Adjacência (economiza memória)</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define V 5 // numero de vertices
+
+// Cada vizinho e um no de uma listinha encadeada
+typedef struct Vizinho {
+    int id;                  // o numero do vertice vizinho
+    struct Vizinho *proximo; // proximo vizinho da lista
+} Vizinho;
+
+Vizinho *lista[V]; // um "cabecalho" de lista para cada vertice
+
+// Zera todos os cabecalhos (nenhum vizinho)
+void iniciar(void) {
+    int i;
+    for (i = 0; i &lt; V; i++) {
+        lista[i] = NULL;
+    }
+}
+
+// Adiciona um vizinho na lista de um vertice (no inicio, bem rapido)
+void adicionar(int a, int b) {
+    Vizinho *novo = malloc(sizeof(Vizinho));
+    novo-&gt;id = b;
+    novo-&gt;proximo = lista[a]; // aponta para o antigo primeiro vizinho
+    lista[a] = novo;          // passa a ser o primeiro da listinha
+}
+
+// Cria uma ligacao nos DOIS sentidos (grafo nao direcionado)
+void ligar(int a, int b) {
+    adicionar(a, b);
+    adicionar(b, a);
+}
+
+// Mostra quem e vizinho de quem
+void mostrar(void) {
+    int i;
+    for (i = 0; i &lt; V; i++) {
+        printf("%d -&gt; ", i);
+        Vizinho *aux = lista[i];
+        while (aux != NULL) {
+            printf("%d -&gt; ", aux-&gt;id);
+            aux = aux-&gt;proximo;
+        }
+        printf("NULL\n");
+    }
+}
+
+// Verifica se existe ligacao (precisa percorrer a listinha)
+int existeLigacao(int a, int b) {
+    Vizinho *aux = lista[a];
+    while (aux != NULL) {
+        if (aux-&gt;id == b) return 1; // achou!
+        aux = aux-&gt;proximo;
+    }
+    return 0; // percorreu tudo e nao achou
+}
+
+int main(void) {
+    iniciar();
+    ligar(0, 1);
+    ligar(0, 2);
+    ligar(1, 3);
+    ligar(3, 4);
+
+    mostrar();
+    printf("0 liga em 1? %d\n", existeLigacao(0, 1)); // 1
+    printf("0 liga em 4? %d\n", existeLigacao(0, 4)); // 0
+    return 0;
+}</code></pre>
+
+    <div class="box-dica">
+      <strong>Dica</strong>
+      Perceba que a lista de adjacência é <b>uma lista encadeada dentro de um vetor</b>. Ou seja: se você entendeu a lista encadeada, você já sabe fazer lista de adjacência. As estruturas se conectam!
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ COMPARAÇÕES ============ -->
+<section id="comparacoes" class="tab-content">
+
+  <div class="card">
+    <h2>Vetor (Array) × Lista Simplesmente Encadeada</h2>
+    <table>
+      <tr>
+        <th>Critério</th>
+        <th>Vetor (Array)</th>
+        <th>Lista Encadeada</th>
+      </tr>
+      <tr>
+        <td><b>Onde os dados ficam</b></td>
+        <td>Lado a lado, em posições contíguas de memória</td>
+        <td>Espalhados, cada nó em um lugar qualquer</td>
+      </tr>
+      <tr>
+        <td><b>Tamanho</b></td>
+        <td>Fixo, definido na criação</td>
+        <td>Dinâmico, cresce conforme a necessidade</td>
+      </tr>
+      <tr>
+        <td><b>Acesso a um elemento</b></td>
+        <td>Direto pelo índice: <code>v[4]</code> → <b>O(1)</b></td>
+        <td>Sequencial: percorre do HEAD nó a nó → <b>O(N)</b></td>
+      </tr>
+      <tr>
+        <td><b>Inserir no início</b></td>
+        <td>Desloca todos para a direita → <b>O(N)</b></td>
+        <td>Só troca 2 ponteiros → <b>O(1)</b></td>
+      </tr>
+      <tr>
+        <td><b>Inserir no fim</b></td>
+        <td><b>O(1)</b>, se houver espaço livre</td>
+        <td><b>O(N)</b> sem ponteiro para o fim; <b>O(1)</b> com ponteiro para o fim</td>
+      </tr>
+      <tr>
+        <td><b>Remover do meio</b></td>
+        <td>Desloca todos para a esquerda → <b>O(N)</b></td>
+        <td>Ajusta ponteiros → <b>O(1)</b> (se já estiver no nó)</td>
+      </tr>
+      <tr>
+        <td><b>Memória extra</b></td>
+        <td>Nenhuma (só o dado)</td>
+        <td>Um ponteiro por nó</td>
+      </tr>
+      <tr>
+        <td><b>Desperdício de memória</b></td>
+        <td>Pode sobrar espaço não usado</td>
+        <td>Não desperdiça (aloca sob demanda)</td>
+      </tr>
+      <tr>
+        <td><b>Melhor para</b></td>
+        <td>Muitas consultas por posição, tamanho conhecido</td>
+        <td>Muitas inserções e remoções no meio</td>
+      </tr>
+    </table>
+
+    <div class="box-conceito">
+      <strong>Resumo em uma frase</strong>
+      Vetor = <b>leitura rápida, mudança lenta</b>. Lista encadeada = <b>leitura lenta, mudança rápida</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Lista Simplesmente × Duplamente Encadeada</h2>
+    <table>
+      <tr><th>Critério</th><th>Simplesmente Encadeada</th><th>Duplamente Encadeada</th></tr>
+      <tr><td>Ponteiros por nó</td><td>1 (<code>proximo</code>)</td><td>2 (<code>anterior</code> e <code>proximo</code>)</td></tr>
+      <tr><td>Sentido de navegação</td><td>Só do início para o fim</td><td>Nos dois sentidos</td></tr>
+      <tr><td>Memória por nó</td><td>Menor</td><td>Maior (um ponteiro extra)</td></tr>
+      <tr><td>Dificuldade de implementação</td><td>Mais simples</td><td>Mais delicada (atualizar 4 ponteiros)</td></tr>
+      <tr><td>Remover um nó conhecido</td><td>Precisa achar o anterior varrendo a lista</td><td>Usa o <code>anterior</code> direto</td></tr>
+      <tr><td>Uso típico</td><td>Percursos simples, pilhas, filas</td><td>Listas com "voltar e avançar" (ex.: playlist, histórico)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Fila (FIFO) × Pilha (LIFO)</h2>
+    <table>
+      <tr><th>Critério</th><th>Fila (Queue)</th><th>Pilha (Stack)</th></tr>
+      <tr><td>Regra</td><td><b>FIFO</b> — primeiro que entra, primeiro que sai</td><td><b>LIFO</b> — último que entra, primeiro que sai</td></tr>
+      <tr><td>Onde entra</td><td>No <b>final</b></td><td>No <b>topo</b></td></tr>
+      <tr><td>Onde sai</td><td>Na <b>frente</b></td><td>No <b>topo</b></td></tr>
+      <tr><td>Variáveis de controle</td><td><code>frente</code>, <code>final</code> (e <code>total</code>)</td><td><code>topo</code></td></tr>
+      <tr><td>Inserir</td><td><code>enfileirar</code> / enqueue</td><td><code>empilhar</code> / push</td></tr>
+      <tr><td>Remover</td><td><code>desenfileirar</code> / dequeue</td><td><code>desempilhar</code> / pop</td></tr>
+      <tr><td>Só olhar</td><td><code>frente</code> / front</td><td><code>topo</code> / peek</td></tr>
+      <tr><td>Analogia</td><td>Fila do banco, fila do mercado</td><td>Pilha de pratos, Ctrl+Z, botão voltar</td></tr>
+      <tr><td>Uso em computação</td><td>Impressora, atendimento, escalonamento</td><td>Recursão, desfazer, avaliação de expressões</td></tr>
+    </table>
+
+    <div class="box-pegadinha">
+      <strong>Nunca esqueça</strong>
+      Fila = FIFO. Pilha = LIFO. Se você trocar essas duas siglas na prova, você perde a questão inteira, mesmo sabendo programar.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Fila Linear × Fila Circular</h2>
+    <table>
+      <tr><th>Critério</th><th>Fila Linear</th><th>Fila Circular</th></tr>
+      <tr><td>Aproveitamento do espaço</td><td>Ruim: posições vazias na frente ficam inutilizadas</td><td>Ótimo: reaproveita todas as posições</td></tr>
+      <tr><td>Como avança o índice</td><td><code>final++</code> (para no fim do vetor)</td><td><code>final = (final + 1) % TAM</code></td></tr>
+      <tr><td>Quando o índice chega ao fim</td><td>Considera a fila cheia, mesmo com espaço livre</td><td>Volta para o índice 0</td></tr>
+      <tr><td>Detecção de cheia/vazia</td><td>Simples: <code>final == TAM</code></td><td>Precisa de contador <code>total</code> (ou deixar 1 posição vazia)</td></tr>
+      <tr><td>Uso na prática</td><td>Quase nunca, só em casos didáticos</td><td>É o padrão real (buffers, escalonadores)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Matriz de Adjacência × Lista de Adjacência</h2>
+    <table>
+      <tr><th>Critério</th><th>Matriz de Adjacência</th><th>Lista de Adjacência</th></tr>
+      <tr><td>Estrutura</td><td>Grade 2D de 0s e 1s</td><td>Um vetor de listas encadeadas</td></tr>
+      <tr><td>Memória gasta</td><td>Sempre V² posições</td><td>Proporcional ao número de arestas</td></tr>
+      <tr><td>Verificar se i liga em j</td><td><b>O(1)</b> — olha <code>mat[i][j]</code></td><td>O(grau do vértice) — percorre a listinha</td></tr>
+      <tr><td>Listar todos os vizinhos de i</td><td>O(V) — varre a linha inteira</td><td>O(grau de i) — só os vizinhos reais</td></tr>
+      <tr><td>Grafo denso (muitas arestas)</td><td>✅ Recomendada</td><td>❌ Listas ficam gigantes</td></tr>
+      <tr><td>Grafo esparso (poucas arestas)</td><td>❌ Desperdiça muita memória</td><td>✅ Recomendada</td></tr>
+      <tr><td>Facilidade de implementar</td><td>Mais fácil (só um vetor 2D)</td><td>Um pouco mais trabalhosa (ponteiros)</td></tr>
+    </table>
+
+    <div class="box-dica">
+      <strong>Regra de bolso para a prova</strong>
+      Se a questão mencionar "grafo com <b>poucas conexões</b>" ou "economizar memória" → <b>lista de adjacência</b>.<br>
+      Se mencionar "verificar rapidamente se dois vértices são ligados" ou "grafo <b>denso/completo</b>" → <b>matriz de adjacência</b>.
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ RESUMO ============ -->
+<section id="resumo" class="tab-content">
+
+  <div class="card">
+    <h2>⚡ Resumo Rápido — Véspera de Prova</h2>
+
+    <div class="box-conceito">
+      <strong>Os 10 pontos que resolvem a prova</strong>
+      <ul>
+        <li><b>1.</b> Estrutura de dados = forma de organizar dados. Toda estrutura define <b>inserir</b>, <b>remover</b> e <b>acessar</b>.</li>
+        <li><b>2.</b> <b>Vetor:</b> acesso direto por índice é <b>O(1)</b> (<code>v[4]</code>), mas inserir/remover no meio exige <b>deslocar elementos</b> → O(N). Tamanho é fixo.</li>
+        <li><b>3.</b> <b>Lista simplesmente encadeada:</b> nós espalhados + ponteiro <code>proximo</code>. Inserir/remover é rápido (só mexe em ponteiros), mas o acesso é <b>sequencial</b> a partir do HEAD → O(N).</li>
+        <li><b>4.</b> <b>Lista duplamente encadeada:</b> cada nó tem <code>anterior</code> e <code>proximo</code>. Anda nos dois sentidos, mas gasta mais memória e exige atualizar 4 ponteiros nas operações.</li>
+        <li><b>5.</b> <b>Fila = FIFO</b> (primeiro que entra, primeiro que sai). Entra no <b>final</b>, sai da <b>frente</b>. Variáveis: <code>frente</code> e <code>final</code>.</li>
+        <li><b>6.</b> <b>Fila circular</b> resolve o desperdício da fila linear usando <b><code>(indice + 1) % TAM</code></b>. Com <code>final = 4</code> e TAM = 5, o próximo final é <b>0</b>, nunca 5!</li>
+        <li><b>7.</b> <b>Pilha = LIFO</b> (último que entra, primeiro que sai). <code>push</code> empilha no topo, <code>pop</code> remove do topo, <code>peek</code>/<code>topo</code> só olha. Variável: <code>topo</code> (vazia = -1).</li>
+        <li><b>8.</b> <b><code>peek()</code>/<code>topo()</code> NÃO remove nada.</b> Só <code>pop()</code>/<code>desempilhar()</code> remove. Essa é a pegadinha mais cobrada.</li>
+        <li><b>9.</b> <b>Grafos</b> = vértices + arestas. <b>Matriz de adjacência</b>: consulta O(1), mas gasta V² de memória. <b>Lista de adjacência</b>: economiza memória em grafos esparsos, mas consultar uma ligação é mais lento.</li>
+        <li><b>10.</b> <b>Grafo direcionado</b> tem setas (A→B não implica B→A). <b>Não direcionado</b> vale nos dois sentidos (a matriz fica simétrica).</li>
+      </ul>
+    </div>
+
+    <div class="box-dica">
+      <strong>Checklist final de 30 segundos</strong>
+      ✔ Sei a diferença entre FIFO e LIFO?<br>
+      ✔ Sei que inserir no meio de vetor desloca elementos?<br>
+      ✔ Sei que lista encadeada não tem acesso por índice?<br>
+      ✔ Sei calcular <code>(final + 1) % TAM</code>?<br>
+      ✔ Sei que <code>topo()</code> não remove?<br>
+      ✔ Sei quando usar matriz e quando usar lista de adjacência?<br>
+      Se respondeu "sim" para todas, você está pronto.
+    </div>
+
+    <div class="box-pegadinha">
+      <strong>Última revisão das 3 pegadinhas mais fatais</strong>
+      1. Inserir no <b>início do vetor</b> é O(N) — não é O(1).<br>
+      2. Fila circular com <code>final = TAM-1</code> → próximo final é <b>0</b>.<br>
+      3. <code>topo()</code> / <code>peek()</code> <b>não removem</b>; quem remove é <code>pop()</code> / <code>desempilhar()</code>.
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz" class="tab-content">
+  <div class="card">
+    <h2>🎯 Quiz Interativo — 5 Questões com Pegadinhas</h2>
+    <p>Clique em uma alternativa. O feedback aparece na hora, com explicação completa.</p>
+    <div id="quiz-container"></div>
+    <div id="quiz-placar" class="box-conceito" style="margin-top:18px; display:none;">
+      <strong>Placar</strong>
+      <span id="placar-texto"></span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Guia de Estudos · ADS — Estruturas de Dados em C · Feito para estudar de forma simples e direta.
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ENTRE ABAS ============ */
+document.querySelectorAll('.tab-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ============ QUIZ ============ */
+var questoes = [
+  {
+    tag: 'Vetor / Array',
+    pergunta: 'Você tem um vetor com os valores [10, 20, 30, 40, 50] e precisa inserir o valor 25 entre o 20 e o 30. O que acontece internamente?',
+    opcoes: [
+      'Nada demais: o vetor simplesmente aceita o 25 no meio, sem mexer nos outros.',
+      'Os elementos 30, 40 e 50 precisam ser deslocados uma posição para a direita para abrir espaço.',
+      'É preciso percorrer o vetor desde o início, nó por nó, até achar o 20.',
+      'O vetor é automaticamente redimensionado e o 25 é colocado no final.'
+    ],
+    correta: 1,
+    explicacao: 'Em um vetor, os dados ficam lado a lado, sem buracos. Para abrir espaço na posição 2, o 50 vai para a 5, o 40 para a 4 e o 30 para a 3 — e só então o 25 é gravado na posição 2. Isso é O(N). A alternativa 3 descreve o comportamento de uma LISTA ENCADEADA, não de um vetor — é a pegadinha clássica.'
+  },
+  {
+    tag: 'Fila Circular',
+    pergunta: 'Em uma fila circular implementada com um vetor de TAMANHO = 5, o índice "final" está valendo 4. Após executar um enfileiramento, qual será o novo valor de "final"?',
+    opcoes: [
+      '5',
+      '4',
+      '0',
+      'Depende do valor que foi enfileirado.'
+    ],
+    correta: 2,
+    explicacao: 'A conta é final = (final + 1) % TAMANHO = (4 + 1) % 5 = 0. A posição 5 NÃO EXISTE em um vetor de índices 0 a 4 — é exatamente por isso que a fila circular "dá a volta" e volta para o índice 0. Quem responde 5 caiu na pegadinha.'
+  },
+  {
+    tag: 'Pilha — Verdadeiro ou Falso',
+    pergunta: 'A operação topo() (também chamada de peek) remove o elemento que está no topo da pilha e diminui o valor da variável topo em 1.',
+    opcoes: [
+      'Verdadeiro',
+      'Falso'
+    ],
+    correta: 1,
+    explicacao: 'FALSO! topo() / peek() apenas OLHA o valor que está no topo, sem modificar nada. Quem remove o elemento e faz topo-- é desempilhar() / pop(). Essa troca entre "olhar" e "remover" é a pegadinha mais comum em provas de pilha.'
+  },
+  {
+    tag: 'Lista Encadeada',
+    pergunta: 'Em uma lista simplesmente encadeada com 10 nós, qual é a única forma de acessar o valor guardado no 5º nó?',
+    opcoes: [
+      'Escrevendo lista[4], pois o índice começa em zero.',
+      'Usando uma matriz de adjacência para localizar o nó.',
+      'Percorrendo a lista desde o HEAD, andando de nó em nó com o ponteiro "proximo", até chegar ao 5º.',
+      'Chamando a função topo(), que devolve o elemento da posição desejada.'
+    ],
+    correta: 2,
+    explicacao: 'A lista encadeada tem acesso SEQUENCIAL: os nós estão espalhados na memória e só se conectam por ponteiros. Não existe lista[4]. Você precisa começar no HEAD e seguir o ponteiro "proximo" quatro vezes. Custo O(N). Já no vetor, lista[4] seria instantâneo (O(1)).'
+  },
+  {
+    tag: 'Grafos',
+    pergunta: 'Um sistema precisa representar um grafo de 10.000 vértices onde cada vértice se conecta a apenas 3 outros, em média. Qual representação é mais adequada para economizar memória?',
+    opcoes: [
+      'Matriz de adjacência, pois ela ocupa menos espaço quando o grafo tem poucas arestas.',
+      'Lista de adjacência, pois ela guarda apenas as conexões que realmente existem.',
+      'Tanto faz: as duas ocupam exatamente a mesma quantidade de memória.',
+      'Pilha, pois ela segue a regra FIFO e evita desperdício.'
+    ],
+    correta: 1,
+    explicacao: 'Esse é um grafo ESPARSO (poucas arestas em relação ao total possível). A matriz de adjacência gastaria 10.000 × 10.000 = 100 milhões de posições, quase todas com zero. A lista de adjacência guarda apenas as conexões reais — cerca de 30.000 registros. A alternativa 4 também está errada porque pilha é LIFO, não FIFO.'
+  }
+];
+
+var respondidas = 0;
+var acertos = 0;
+
+function montarQuiz() {
+  var container = document.getElementById('quiz-container');
+  var html = '';
+
+  questoes.forEach(function (q, i) {
+    html += '<div class="quiz-q">';
+    html += '<span class="quiz-tag">' + q.tag + '</span>';
+    html += '<p class="quiz-pergunta">' + (i + 1) + '. ' + q.pergunta + '</p>';
+    html += '<div class="quiz-options">';
+    q.opcoes.forEach(function (op, j) {
+      html += '<button class="quiz-opt" data-q="' + i + '" data-o="' + j + '">' + op + '</button>';
+    });
+    html += '</div>';
+    html += '<div class="feedback" id="fb-' + i + '"></div>';
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('.quiz-opt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      responder(parseInt(btn.dataset.q, 10), parseInt(btn.dataset.o, 10));
+    });
+  });
+}
+
+function responder(qIdx, oIdx) {
+  var q = questoes[qIdx];
+  var botoes = document.querySelectorAll('.quiz-opt[data-q="' + qIdx + '"]');
+  var jaRespondida = false;
+
+  botoes.forEach(function (b) {
+    if (b.disabled) { jaRespondida = true; }
+  });
+  if (jaRespondida) { return; }
+
+  botoes.forEach(function (b) {
+    b.disabled = true;
+    var idx = parseInt(b.dataset.o, 10);
+    if (idx === q.correta) {
+      b.classList.add('correct');
+    }
+    if (idx === oIdx && idx !== q.correta) {
+      b.classList.add('wrong');
+    }
+  });
+
+  var fb = document.getElementById('fb-' + qIdx);
+  if (oIdx === q.correta) {
+    acertos++;
+    fb.className = 'feedback correct';
+    fb.innerHTML = '<b>✅ Correto!</b> ' + q.explicacao;
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.innerHTML = '<b>❌ Não foi essa.</b> ' + q.explicacao;
+  }
+
+  respondidas++;
+  atualizarPlacar();
+}
+
+function atualizarPlacar() {
+  var box = document.getElementById('quiz-placar');
+  var txt = document.getElementById('placar-texto');
+  box.style.display = 'block';
+
+  if (respondidas < questoes.length) {
+    txt.innerHTML = 'Você já respondeu <b>' + respondidas + '</b> de <b>' + questoes.length + '</b> questões. Acertos até agora: <b>' + acertos + '</b>.';
+  } else {
+    var msg = '';
+    if (acertos === 5) {
+      msg = '🏆 <b>Gabaritou!</b> Você dominou listas, filas, pilhas e grafos. Pode ir tranquilo para a prova.';
+    } else if (acertos === 4) {
+      msg = '👏 <b>Muito bom!</b> Você acertou ' + acertos + ' de 5. Revise apenas o ponto que errou e está pronto.';
+    } else if (acertos === 3) {
+      msg = '💪 <b>Bom começo!</b> Você acertou ' + acertos + ' de 5. Volte na aba Teoria e releia as seções das questões erradas.';
+    } else {
+      msg = '📚 <b>Hora de revisar!</b> Você acertou ' + acertos + ' de 5. Leia a aba Resumo e depois refaça os Exemplos passo a passo.';
+    }
+    txt.innerHTML = 'Resultado final: <b>' + acertos + ' de ' + questoes.length + '</b>. ' + msg;
+  }
+}
+
+montarQuiz();
+
+/* Reaplica o realce de sintaxe depois que o HTML é montado */
+if (window.hljs) { hljs.highlightAll(); }
+</script>
+
+</body>
+</html>

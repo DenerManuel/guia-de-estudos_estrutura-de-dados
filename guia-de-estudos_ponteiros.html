@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Definitivo de Estrutura de Dados: Ponteiros em Linguagem C (Do Zero ao Aprovado)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --accent: #4F46E5;
+  --accent-soft: #EEF2FF;
+  --accent-2: #7C3AED;
+  --accent-2-soft: #F5F3FF;
+  --success: #059669;
+  --success-soft: #ECFDF5;
+  --warning: #D97706;
+  --warning-soft: #FFFBEB;
+  --danger: #DC2626;
+  --danger-soft: #FEF2F2;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --border-soft: #F3F4F6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 24px 16px; font-size: 16px; max-width: 1100px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { color: var(--accent); font-size: 2.2rem; margin-bottom: 6px; font-weight: 700; }
+.header p { color: var(--muted); font-size: 1rem; font-weight: 500; }
+
+.nav-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: var(--card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s ease; font-family: inherit; font-size: 0.95rem; }
+.tab-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 20px; }
+
+.box-conceito  { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-analogia  { border-left: 4px solid var(--accent-2); background: var(--accent-2-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-pegadinha { border-left: 4px solid var(--danger); background: var(--danger-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+.box-dica      { border-left: 4px solid var(--success); background: var(--success-soft); padding: 16px; border-radius: 14px; margin-bottom: 16px; }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 8px; overflow: hidden; }
+th, td { border: 1px solid var(--border); padding: 12px 14px; text-align: left; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+
+pre { background: #0F172A; color: #F8FAFC; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 0.9rem; margin: 12px 0; }
+code { font-family: 'Fira Code', Consolas, monospace; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.quiz-opt { background: var(--border-soft); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; font-family: inherit; color: var(--text); }
+.quiz-opt:hover { background: var(--accent-soft); border-color: var(--accent); }
+.feedback { margin-top: 12px; padding: 14px; border-radius: 8px; display: none; font-size: 0.95rem; }
+.feedback.correct { background: var(--success-soft); color: var(--success); border: 1px solid var(--success); }
+.feedback.incorrect { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); }
+
+/* ===== Extras do guia ===== */
+h2 { color: var(--accent); font-size: 1.5rem; margin-bottom: 12px; font-weight: 700; }
+h3 { color: var(--accent-2); font-size: 1.15rem; margin: 18px 0 8px; font-weight: 700; }
+h4 { color: var(--text); font-size: 1.02rem; margin: 14px 0 6px; font-weight: 700; }
+p { margin-bottom: 10px; }
+ul, ol { margin: 10px 0 12px 22px; }
+li { margin-bottom: 6px; }
+strong { color: var(--text); font-weight: 700; }
+.box-conceito strong, .box-analogia strong, .box-pegadinha strong, .box-dica strong { color: inherit; }
+
+.titulo-caixa { display: block; font-weight: 700; margin-bottom: 6px; font-size: 1rem; letter-spacing: .2px; }
+
+.tabela-memoria td:nth-child(4) { font-family: 'Fira Code', Consolas, monospace; color: var(--accent-2); font-weight: 600; }
+.tabela-memoria td:nth-child(3) { font-family: 'Fira Code', Consolas, monospace; }
+
+.code-title { font-weight: 700; color: var(--accent); margin: 16px 0 4px; font-size: 1rem; }
+
+.quiz-question { font-weight: 700; font-size: 1.03rem; margin-bottom: 6px; }
+.quiz-opt.certa { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+.quiz-opt.errada { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+.quiz-opt:disabled { opacity: 1; }
+
+.resumo-lista { list-style: none; margin-left: 0; }
+.resumo-lista li { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; }
+.resumo-lista li::before { content: "✔ "; color: var(--success); font-weight: 700; }
+
+.destaque { background: var(--warning-soft); border: 1px solid var(--warning); color: var(--warning); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+.badge { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 20px; padding: 3px 12px; font-size: .78rem; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guia de Estudos · ADS - Ponteiros em C</h1>
+  <p>Guia Definitivo de Estrutura de Dados: Ponteiros em Linguagem C (Do Zero ao Aprovado)</p>
+</div>
+
+<nav class="nav-tabs">
+  <button class="tab-btn active" data-tab="teoria">📘 Teoria</button>
+  <button class="tab-btn" data-tab="exemplos">💡 Exemplos</button>
+  <button class="tab-btn" data-tab="memoria">🧠 Código &amp; Memória</button>
+  <button class="tab-btn" data-tab="comparacoes">⚖️ Comparações</button>
+  <button class="tab-btn" data-tab="resumo">📝 Resumo</button>
+  <button class="tab-btn" data-tab="quiz">🎯 Quiz</button>
+</nav>
+
+<!-- ============================= ABA 1: TEORIA ============================= -->
+<section id="teoria" class="tab-content active">
+
+  <div class="card">
+    <span class="badge">Tópico 1</span>
+    <h2>1. O que é um Ponteiro (do zero, sem enrolação)</h2>
+
+    <div class="box-conceito">
+      <span class="titulo-caixa">📌 Conceito</span>
+      Uma <strong>variável normal</strong> guarda um <strong>valor</strong> (um número, uma letra, etc.).<br>
+      Um <strong>ponteiro</strong> é uma variável especial que guarda um <strong>endereço de memória</strong> — ou seja, o lugar exato onde aquele valor está guardado dentro do computador.
+    </div>
+
+    <div class="box-analogia">
+      <span class="titulo-caixa">🏠 A analogia definitiva: a Casa e o Morador</span>
+      Imagine uma rua cheia de casas.<br><br>
+      • A <strong>variável comum</strong> é o <strong>morador dentro da casa</strong> (o valor, por exemplo o número 10).<br>
+      • O <strong>ponteiro</strong> é um <strong>papelzinho com o endereço da casa escrito nele</strong> (por exemplo, "Rua 0x1000, casa 4").<br><br>
+      <strong>Muito importante:</strong> o endereço da casa <strong>NÃO é o morador</strong>! Escrever "Rua 0x1000" no papel não é a mesma coisa que a pessoa que mora lá. Guardar o endereço é diferente de guardar o valor.
+    </div>
+
+    <h3>Por que usar ponteiros? (para que servem de verdade)</h3>
+    <ul>
+      <li><strong>Fazer funções alterarem variáveis de fora:</strong> sem ponteiro, a função só recebe uma cópia e não consegue mudar a variável original.</li>
+      <li><strong>Trabalhar com vetores (arrays) e strings de forma eficiente:</strong> em vez de copiar tudo, passamos só o endereço do primeiro elemento.</li>
+      <li><strong>Ser a base da alocação dinâmica de memória</strong> (malloc/free): criar espaços de memória na hora em que o programa está rodando.</li>
+      <li><strong>Ser o alicerce das estruturas de dados:</strong> listas encadeadas, pilhas, filas e árvores só existem porque existem ponteiros.</li>
+    </ul>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Dica de estudo</span>
+      Sempre que bater dúvida, pergunte a si mesmo: <em>"Estou falando do MORADOR (valor) ou do PAPEL COM O ENDEREÇO (ponteiro)?"</em>. Essa única pergunta resolve 90% das questões de prova.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Tópico 2</span>
+    <h2>2. Operadores e Notação (o coração do assunto)</h2>
+
+    <h3>Os dois operadores que você precisa dominar</h3>
+    <table>
+      <thead>
+        <tr><th>Operador</th><th>Nome</th><th>Pergunta que ele responde</th><th>Exemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&amp;</code></td>
+          <td>Operador de endereço (address-of)</td>
+          <td>"Onde você mora?" → pega o <strong>endereço</strong> da variável</td>
+          <td><code>&amp;x</code> → endereço de x</td>
+        </tr>
+        <tr>
+          <td><code>*</code></td>
+          <td>Operador de conteúdo (desreferência)</td>
+          <td>"O que tem dentro dessa casa?" → acessa/altera o <strong>valor</strong> guardado naquele endereço</td>
+          <td><code>*p</code> → valor que está no endereço guardado em p</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Tabela de notação (decore esta tabela!)</h3>
+    <p>Suponha o código abaixo, com endereços fictícios só para facilitar o entendimento:</p>
+    <pre><code class="language-c">int x = 10;      // a variável x mora no endereço 0x1000
+int *p = &x;     // o ponteiro p mora no endereço 0x2000 e guarda 0x1000</code></pre>
+
+    <table>
+      <thead>
+        <tr><th>Expressão</th><th>O que significa (em palavras simples)</th><th>Valor no exemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>x</code></td><td>O valor guardado dentro da variável x (o morador)</td><td>10</td></tr>
+        <tr><td><code>&amp;x</code></td><td>O endereço de memória onde x está guardado (onde a casa fica)</td><td>0x1000</td></tr>
+        <tr><td><code>p</code></td><td>O valor que está dentro do ponteiro p — que é o endereço de x</td><td>0x1000</td></tr>
+        <tr><td><code>*p</code></td><td>O conteúdo que existe no endereço guardado dentro de p (abrir a casa e ver o morador)</td><td>10</td></tr>
+        <tr><td><code>&amp;p</code></td><td>O endereço de memória onde o próprio ponteiro p está guardado</td><td>0x2000</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha clássica de prova</span>
+      O símbolo <code>*</code> tem <strong>dois papéis diferentes</strong>:<br>
+      • Na <strong>declaração</strong> (<code>int *p;</code>) ele diz "p é um ponteiro".<br>
+      • No <strong>meio do código</strong> (<code>*p = 50;</code>) ele diz "o conteúdo do endereço apontado por p".<br>
+      São coisas diferentes com a mesma carinha. Leia sempre o contexto!
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Tópico 3</span>
+    <h2>3. Declaração, Inicialização e Segurança com NULL</h2>
+
+    <h3>Como declarar</h3>
+    <pre><code class="language-c">int *p;    // leia em voz alta: "p é um ponteiro que aponta para um inteiro"</code></pre>
+
+    <h3>Como inicializar (dar um endereço válido para ele)</h3>
+    <pre><code class="language-c">int x = 10;      // cria a variável comum, com o valor 10
+int *p = &x;     // p agora guarda o ENDEREÇO de x (p aponta para x)</code></pre>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 PERIGO: o ponteiro selvagem (wild pointer)</span>
+      Quando você escreve apenas <code>int *p;</code>, o ponteiro <strong>não recebe nenhum endereço válido</strong>. Ele fica com um "lixo" que estava na memória.<br><br>
+      Se você tentar ler ou escrever <code>*p</code> nesse estado, o programa pode <strong>travar (crashar)</strong>, corromper dados ou se comportar de forma totalmente imprevisível.<br><br>
+      <strong>Regra de ouro:</strong> nunca use um ponteiro antes de dar um endereço válido a ele.
+    </div>
+
+    <h3>O ponteiro que não aponta para lugar nenhum: NULL</h3>
+    <pre><code class="language-c">int *p = NULL;   // p existe, mas aponta para "lugar nenhum" (endereço inválido)</code></pre>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Dica de ouro: sempre verifique antes de usar</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">if (p != NULL) {
+    *p = 100;     // só mexe se o ponteiro realmente aponta para algum lugar válido
+}</code></pre>
+      Isso evita que o programa quebre. É a mesma ideia de conferir se o papelzinho do endereço está em branco antes de sair dirigindo até lá.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Tópico 4</span>
+    <h2>4. Modificando Variáveis e Funções (Passagem por Referência)</h2>
+
+    <h3>Alterando o valor de x sem tocar em x</h3>
+    <pre><code class="language-c">int x = 10;
+int *p = &x;
+
+*p = 50;      // "vá até a casa apontada por p e coloque 50 lá dentro"
+
+printf("%d", x);   // imprime 50 — x mudou, mesmo sem escrevermos x = 50!</code></pre>
+
+    <h3>Passagem por valor vs Passagem por ponteiro</h3>
+
+    <h4>❌ Passagem por valor (não muda o original)</h4>
+    <pre><code class="language-c">void somaUm(int n) {   // recebe uma CÓPIA do valor
+    n = n + 1;         // muda só a cópia, o original fica igual
+}
+
+int main(void) {
+    int x = 10;
+    somaUm(x);         // passa só o valor 10
+    printf("%d", x);   // imprime 10 — NÃO mudou!
+    return 0;
+}</code></pre>
+
+    <h4>✅ Passagem por ponteiro (muda o original)</h4>
+    <pre><code class="language-c">void incrementa(int *n) {   // recebe o ENDEREÇO
+    (*n)++;                 // vai até a casa e aumenta o valor de dentro
+}
+
+int main(void) {
+    int x = 10;
+    incrementa(&x);         // passa o ENDEREÇO de x
+    printf("%d", x);        // imprime 11 — MUDOU de verdade!
+    return 0;
+}</code></pre>
+
+    <div class="box-analogia">
+      <span class="titulo-caixa">🏠 Analogia para fixar</span>
+      <strong>Passagem por valor</strong> = você tira uma <em>fotocópia</em> do documento e entrega. O outro pode rabiscar a cópia à vontade — o seu original continua intacto.<br><br>
+      <strong>Passagem por ponteiro</strong> = você entrega o <em>endereço da sua casa</em> e a chave. A outra pessoa vai lá e mexe no original de verdade.
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha de prova</span>
+      Se a função é <code>void incrementa(int *n)</code>, a chamada <strong>precisa</strong> ser <code>incrementa(&amp;x);</code> — com o <code>&amp;</code>!<br>
+      Se você escrever <code>incrementa(x);</code>, o compilador reclama (ou pior, o programa quebra). A função quer um endereço, não um número.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Tópico 5</span>
+    <h2>5. Ponteiro para Ponteiro, Vetores e Strings</h2>
+
+    <h3>Ponteiro para ponteiro (<code>**pp</code>)</h3>
+    <p>É um papelzinho que guarda o endereço de outro papelzinho. Simples assim.</p>
+    <pre><code class="language-c">int x = 10;
+int *p = &x;        // p aponta para x
+int **pp = &p;      // pp aponta para p
+
+printf("%d", **pp); // imprime 10 — dois "asteriscos" para chegar no valor final</code></pre>
+
+    <table>
+      <thead>
+        <tr><th>Expressão</th><th>O que é</th><th>Valor no exemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>x</code></td><td>O valor guardado em x</td><td>10</td></tr>
+        <tr><td><code>p</code></td><td>O endereço de x</td><td>0x1000</td></tr>
+        <tr><td><code>*p</code></td><td>O valor de x (abriu a casa uma vez)</td><td>10</td></tr>
+        <tr><td><code>pp</code></td><td>O endereço de p</td><td>0x2000</td></tr>
+        <tr><td><code>*pp</code></td><td>O valor de p, ou seja, o endereço de x</td><td>0x1000</td></tr>
+        <tr><td><code>**pp</code></td><td>O valor de x (abriu a casa duas vezes)</td><td>10</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Vetores e Aritmética de Ponteiros</h3>
+    <div class="box-conceito">
+      <span class="titulo-caixa">📌 Conceito essencial</span>
+      O <strong>nome de um vetor</strong> é, na prática, um <strong>ponteiro para o primeiro elemento</strong> dele (<code>&amp;v[0]</code>).<br>
+      Por isso, <code>v[i]</code> é <strong>exatamente a mesma coisa</strong> que <code>*(v + i)</code>.
+    </div>
+
+    <pre><code class="language-c">int v[3] = {5, 10, 15};
+
+printf("%d", v[1]);        // 10
+printf("%d", *(v + 1));    // 10  ← idêntico!
+
+// Somar 1 a um ponteiro NÃO soma 1 no endereço bruto:
+// ele "anda uma casa" inteira na memória (no caso de int, 4 bytes).</code></pre>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Dica: pular de casa em casa</span>
+      Se <code>v</code> está no endereço 0x1000 e cada <code>int</code> ocupa 4 bytes:<br>
+      • <code>v + 0</code> → 0x1000 → <code>v[0]</code><br>
+      • <code>v + 1</code> → 0x1004 → <code>v[1]</code><br>
+      • <code>v + 2</code> → 0x1008 → <code>v[2]</code>
+    </div>
+
+    <h3>Strings com Ponteiros</h3>
+    <p>Em C, uma string é um vetor de caracteres que <strong>termina com o caractere especial <code>'\0'</code></strong> (o "fim da linha").</p>
+    <pre><code class="language-c">char nome[] = "ADS";
+char *p = nome;               // p aponta para o primeiro caractere
+
+while (*p != '\0') {          // enquanto não chegar no fim da string
+    printf("%c", *p);         // mostra o caractere atual
+    p++;                      // anda uma casinha para o próximo
+}</code></pre>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha: <code>p++</code> é diferente de <code>(*p)++</code></span>
+      • <code>p++</code> → faz o <strong>ponteiro andar</strong> para a próxima posição da memória.<br>
+      • <code>(*p)++</code> → aumenta o <strong>valor guardado</strong> na posição atual (por exemplo, 'A' viraria 'B').<br>
+      Os parênteses mudam tudo!
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Tópico 6</span>
+    <h2>6. Pegadinhas de Prova (onde todo mundo perde ponto)</h2>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha 1: confundir <code>p</code> (endereço) com <code>*p</code> (valor)</span>
+      Dentro de funções que recebem ponteiros, é comum escrever errado:
+      <pre style="margin:8px 0;"><code class="language-c">if (a > b)      // ERRADO! Compara ENDEREÇOS de memória, não os números
+if (*a > *b)    // CERTO! Compara os VALORES que estão dentro das casas</code></pre>
+      Esse é o erro mais clássico em questões de "maior valor entre três números".
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha 2: trocar valores sem variável temporária</span>
+      Dá para trocar dois valores usando só aritmética com ponteiros:
+      <pre style="margin:8px 0;"><code class="language-c">*p = *q + *p;   // soma os dois e guarda em p
+*q = *p - *q;   // agora q recebe o valor original de p
+*p = *p - *q;   // e p recebe o valor original de q</code></pre>
+      Funciona, mas cuidado: se os valores forem muito grandes pode haver estouro (overflow). Na prova, a versão com variável temporária é a mais segura e aceita.
+    </div>
+
+    <h3>Exercícios de sala que caem em prova</h3>
+
+    <h4>Exercício 1 — Trocar dois valores com função</h4>
+    <pre><code class="language-c">void trocar(int *a, int *b) {
+    int temp = *a;   // guarda o valor de a numa caixinha temporária
+    *a = *b;         // a recebe o valor de b
+    *b = temp;       // b recebe o valor guardado
+}
+// chamada: trocar(&x, &y);</code></pre>
+
+    <h4>Exercício 2 — Maior valor entre três números</h4>
+    <pre><code class="language-c">int maiorValor(int *a, int *b, int *c) {
+    int maior = *a;                 // assume que a é o maior
+    if (*b > maior) maior = *b;     // compara VALORES, não endereços
+    if (*c > maior) maior = *c;
+    return maior;
+}
+// chamada: maiorValor(&x, &y, &z);</code></pre>
+
+    <h4>Exercício 3 — Soma de vetores com notação de ponteiro</h4>
+    <pre><code class="language-c">for (int i = 0; i < 3; i++) {
+    *(resultado + i) = *(vetor1 + i) + *(vetor2 + i);
+}</code></pre>
+  </div>
+
+</section>
+
+<!-- ============================= ABA 2: EXEMPLOS ============================= -->
+<section id="exemplos" class="tab-content">
+
+  <div class="card">
+    <span class="badge">Exemplo 1</span>
+    <h2>Modificando uma Variável através de um Ponteiro</h2>
+    <p><strong>Objetivo:</strong> mostrar que dá para mudar o valor de <code>x</code> sem escrever <code>x = ...</code>.</p>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    int x = 10;          // variável normal: guarda o VALOR 10
+    int *p = &x;         // ponteiro: guarda o ENDEREÇO de x
+
+    printf("Antes:  x = %d\n", x);     // mostra 10
+
+    *p = 50;             // "vá na casa apontada por p e coloque 50 lá dentro"
+
+    printf("Depois: x = %d\n", x);     // mostra 50
+
+    return 0;
+}</code></pre>
+
+    <h3>Passo a passo do que acontece na memória</h3>
+    <ol>
+      <li><code>int x = 10;</code> → o computador reserva uma casinha e coloca 10 dentro. Suponha endereço 0x1000.</li>
+      <li><code>int *p = &x;</code> → o computador reserva outra casinha (0x2000) e coloca o endereço 0x1000 dentro dela.</li>
+      <li><code>*p = 50;</code> → o programa olha dentro de <code>p</code>, encontra 0x1000, vai até lá e troca o 10 por 50.</li>
+      <li>Resultado: <code>x</code> vale 50, mesmo sem nunca termos escrito <code>x = 50</code>.</li>
+    </ol>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Saída do programa</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">Antes:  x = 10
+Depois: x = 50</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Exemplo 2</span>
+    <h2>Trocando Valores com a Função <code>trocar</code></h2>
+    <p><strong>Objetivo:</strong> trocar o conteúdo de duas variáveis usando passagem por referência.</p>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+// Recebe dois ENDEREÇOS e troca os valores que estão neles
+void trocar(int *a, int *b) {
+    int temp = *a;   // guarda o valor da casa "a" na caixinha temporária
+    *a = *b;         // a casa "a" recebe o valor da casa "b"
+    *b = temp;       // a casa "b" recebe o valor guardado
+}
+
+int main(void) {
+    int x = 3, y = 7;
+
+    printf("Antes:  x = %d | y = %d\n", x, y);
+
+    trocar(&x, &y);  // passamos os ENDEREÇOS de x e y
+
+    printf("Depois: x = %d | y = %d\n", x, y);
+
+    return 0;
+}</code></pre>
+
+    <h3>Simulação passo a passo</h3>
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Passo</th><th>Comando</th><th>Valor de x</th><th>Valor de y</th><th>Valor de temp</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Início</td><td>int x = 3, y = 7;</td><td>3</td><td>7</td><td>—</td></tr>
+        <tr><td>1</td><td>int temp = *a;</td><td>3</td><td>7</td><td>3</td></tr>
+        <tr><td>2</td><td>*a = *b;</td><td>7</td><td>7</td><td>3</td></tr>
+        <tr><td>3</td><td>*b = temp;</td><td>7</td><td>3</td><td>3</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Saída do programa</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">Antes:  x = 3 | y = 7
+Depois: x = 7 | y = 3</code></pre>
+    </div>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Atenção</span>
+      Se a função fosse <code>void trocar(int a, int b)</code> (sem os asteriscos) e a chamada fosse <code>trocar(x, y)</code>, <strong>nada mudaria</strong> em <code>main</code>, porque só cópias seriam trocadas.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Exemplo 3</span>
+    <h2>Encontrando o Maior Valor entre Três Números</h2>
+    <p><strong>Objetivo:</strong> comparar <em>valores</em> e não endereços (essa é a pegadinha!).</p>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int maiorValor(int *a, int *b, int *c) {
+    int maior = *a;                  // começa assumindo que o valor de a é o maior
+    if (*b &gt; maior) maior = *b;      // compara VALORES (com asterisco!)
+    if (*c &gt; maior) maior = *c;      // compara VALORES (com asterisco!)
+    return maior;                    // devolve o maior número encontrado
+}
+
+int main(void) {
+    int x = 12, y = 45, z = 30;
+
+    printf("Maior valor = %d\n", maiorValor(&amp;x, &amp;y, &amp;z));
+
+    return 0;
+}</code></pre>
+
+    <h3>Simulação passo a passo</h3>
+    <table>
+      <thead>
+        <tr><th>Passo</th><th>Comando</th><th>maior</th><th>Explicação</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>int maior = *a;</td><td>12</td><td>Começa com o valor de x</td></tr>
+        <tr><td>2</td><td>if (*b &gt; maior)</td><td>45</td><td>45 &gt; 12 é verdadeiro, então maior vira 45</td></tr>
+        <tr><td>3</td><td>if (*c &gt; maior)</td><td>45</td><td>30 &gt; 45 é falso, então nada muda</td></tr>
+        <tr><td>4</td><td>return maior;</td><td>45</td><td>Devolve 45</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Versão ERRADA (cai em prova!)</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">if (a &gt; b) maior = b;   // ERRADO: está comparando ENDEREÇOS de memória!</code></pre>
+      Endereços de memória não têm relação com o tamanho dos números guardados. Isso poderia dar qualquer resultado.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Exemplo 4</span>
+    <h2>Percorrendo Vetores e Strings com <code>*(p + i)</code></h2>
+    <p><strong>Objetivo:</strong> somar dois vetores e depois percorrer uma string usando aritmética de ponteiros.</p>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    int v1[3] = {1, 2, 3};
+    int v2[3] = {10, 20, 30};
+    int resultado[3];
+    int *p;
+
+    // Soma dos vetores usando notação de ponteiro
+    for (int i = 0; i &lt; 3; i++) {
+        *(resultado + i) = *(v1 + i) + *(v2 + i);
+    }
+
+    // Percorrendo o vetor resultado com um ponteiro
+    p = resultado;                     // p aponta para o primeiro elemento
+    for (int i = 0; i &lt; 3; i++) {
+        printf("%d ", *(p + i));       // imprime 11 22 33
+    }
+    printf("\n");
+
+    // Percorrendo uma string caractere por caractere
+    char nome[] = "ADS";               // guarda 'A', 'D', 'S', '\0'
+    char *s = nome;                    // s aponta para o primeiro caractere
+
+    while (*s != '\0') {               // enquanto não chegar no fim da string
+        printf("%c", *s);              // mostra o caractere atual
+        s++;                           // anda uma casinha para o próximo
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+
+    <h3>Como o vetor <code>resultado</code> fica na memória</h3>
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Posição</th><th>Tipo</th><th>Valor guardado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>resultado[0]</td><td>int</td><td>11</td><td>0x1000</td><td>1 + 10</td></tr>
+        <tr><td>resultado[1]</td><td>int</td><td>22</td><td>0x1004</td><td>2 + 20</td></tr>
+        <tr><td>resultado[2]</td><td>int</td><td>33</td><td>0x1008</td><td>3 + 30</td></tr>
+        <tr><td>p</td><td>int *</td><td>0x1000</td><td>0x2000</td><td>Aponta para o primeiro elemento</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Como a string "ADS" fica na memória</h3>
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Posição</th><th>Tipo</th><th>Valor guardado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>nome[0]</td><td>char</td><td>'A'</td><td>0x3000</td><td>Primeira letra</td></tr>
+        <tr><td>nome[1]</td><td>char</td><td>'D'</td><td>0x3001</td><td>Segunda letra</td></tr>
+        <tr><td>nome[2]</td><td>char</td><td>'S'</td><td>0x3002</td><td>Terceira letra</td></tr>
+        <tr><td>nome[3]</td><td>char</td><td>'\0'</td><td>0x3003</td><td>Marca o fim da string</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Saída do programa</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">11 22 33
+ADS</code></pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================= ABA 3: CÓDIGO & MEMÓRIA ============================= -->
+<section id="memoria" class="tab-content">
+
+  <div class="card">
+    <h2>Cenário 1 — Variável comum e ponteiro simples</h2>
+    <pre><code class="language-c">int x = 10;
+int *p = &amp;x;</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>x</td><td>int</td><td>10</td><td>0x1000</td><td>O "morador" da casa — o valor em si</td></tr>
+        <tr><td>p</td><td>int *</td><td>0x1000</td><td>0x2000</td><td>O "papel com endereço" — aponta para x</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-conceito">
+      <span class="titulo-caixa">📌 Leitura da tabela</span>
+      <code>p</code> vale 0x1000 porque <strong>é isso que está escrito dentro dele</strong>. E como 0x1000 é o endereço de <code>x</code>, dizemos que "p aponta para x".<br>
+      Já <code>*p</code> vale 10, porque 10 é o que está guardado dentro da casa 0x1000.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cenário 2 — Depois de alterar o valor pelo ponteiro</h2>
+    <pre><code class="language-c">int x = 10;
+int *p = &amp;x;
+
+*p = 50;      // altera o conteúdo da casa apontada por p</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>x</td><td>int</td><td>50</td><td>0x1000</td><td>O valor mudou de 10 para 50</td></tr>
+        <tr><td>p</td><td>int *</td><td>0x1000</td><td>0x2000</td><td>Continua apontando para o mesmo lugar</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Observação importante</span>
+      O <strong>endereço</strong> de x não mudou. Só o <strong>conteúdo</strong> da casa mudou. O ponteiro continua apontando para o mesmo lugar.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cenário 3 — Ponteiro para ponteiro</h2>
+    <pre><code class="language-c">int x = 10;
+int *p = &amp;x;
+int **pp = &amp;p;</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>x</td><td>int</td><td>10</td><td>0x1000</td><td>O valor original</td></tr>
+        <tr><td>p</td><td>int *</td><td>0x1000</td><td>0x2000</td><td>Aponta para x</td></tr>
+        <tr><td>pp</td><td>int **</td><td>0x2000</td><td>0x3000</td><td>Aponta para p</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th>Expressão</th><th>Valor</th><th>Explicação em linguagem simples</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>pp</code></td><td>0x2000</td><td>O endereço de p</td></tr>
+        <tr><td><code>*pp</code></td><td>0x1000</td><td>Abriu uma vez: achou o valor de p (endereço de x)</td></tr>
+        <tr><td><code>**pp</code></td><td>10</td><td>Abriu duas vezes: achou o valor de x</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Cenário 4 — Vetor e aritmética de ponteiros</h2>
+    <pre><code class="language-c">int v[3] = {5, 10, 15};
+int *p = v;          // equivale a: int *p = &amp;v[0];</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>v[0]</td><td>int</td><td>5</td><td>0x1000</td><td>Primeiro elemento do vetor</td></tr>
+        <tr><td>v[1]</td><td>int</td><td>10</td><td>0x1004</td><td>Segundo elemento (4 bytes depois)</td></tr>
+        <tr><td>v[2]</td><td>int</td><td>15</td><td>0x1008</td><td>Terceiro elemento</td></tr>
+        <tr><td>p</td><td>int *</td><td>0x1000</td><td>0x2000</td><td>Aponta para v[0]</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th>Expressão</th><th>Endereço calculado</th><th>Valor acessado</th><th>Equivalente a</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>*p</code></td><td>0x1000</td><td>5</td><td><code>v[0]</code></td></tr>
+        <tr><td><code>*(p + 1)</code></td><td>0x1004</td><td>10</td><td><code>v[1]</code></td></tr>
+        <tr><td><code>*(p + 2)</code></td><td>0x1008</td><td>15</td><td><code>v[2]</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Por que soma 4 e não 1?</span>
+      Porque um <code>int</code> ocupa 4 bytes. Somar 1 a um ponteiro de inteiro significa "avance um inteiro inteiro na memória", não "avance 1 byte". É como pular de casa em casa em vez de andar um passo dentro da mesma casa.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cenário 5 — Função <code>trocar</code> em execução</h2>
+    <pre><code class="language-c">int x = 3, y = 7;
+trocar(&amp;x, &amp;y);</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>x</td><td>int</td><td>3 → 7</td><td>0x1000</td><td>Valor original de x</td></tr>
+        <tr><td>y</td><td>int</td><td>7 → 3</td><td>0x1004</td><td>Valor original de y</td></tr>
+        <tr><td>a (parâmetro)</td><td>int *</td><td>0x1000</td><td>0x3000</td><td>Aponta para x</td></tr>
+        <tr><td>b (parâmetro)</td><td>int *</td><td>0x1004</td><td>0x3008</td><td>Aponta para y</td></tr>
+        <tr><td>temp (local)</td><td>int</td><td>3</td><td>0x3010</td><td>Cópia temporária do valor de x</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-conceito">
+      <span class="titulo-caixa">📌 Repare</span>
+      Os parâmetros <code>a</code> e <code>b</code> são <strong>variáveis novas</strong>, criadas dentro da função. Mas o <strong>conteúdo</strong> delas são endereços que apontam para as variáveis originais de <code>main</code>. Por isso a troca funciona de verdade.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cenário 6 — Ponteiro não inicializado vs NULL</h2>
+    <pre><code class="language-c">int *p;            // PERIGOSO: ponteiro selvagem
+int *q = NULL;     // SEGURO: aponta para lugar nenhum, de forma explícita</code></pre>
+
+    <table class="tabela-memoria">
+      <thead>
+        <tr><th>Nome</th><th>Tipo</th><th>Valor armazenado</th><th>Endereço</th><th>Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>p</td><td>int *</td><td>lixo (ex.: 0x8F3A21)</td><td>0x2000</td><td>Aponta para um lugar aleatório — NUNCA use *p</td></tr>
+        <tr><td>q</td><td>int *</td><td>NULL (0)</td><td>0x2008</td><td>Aponta para lugar nenhum — verifique antes de usar</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Nunca faça isso</span>
+      <pre style="margin:8px 0 0;"><code class="language-c">int *p;      // ponteiro selvagem
+*p = 10;     // ERRO GRAVE: escrevendo em memória aleatória → o programa pode travar</code></pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================= ABA 4: COMPARAÇÕES ============================= -->
+<section id="comparacoes" class="tab-content">
+
+  <div class="card">
+    <h2>Comparação 1 — Variável Normal vs Ponteiro</h2>
+    <table>
+      <thead>
+        <tr><th>Aspecto</th><th>Variável Normal (<code>int x;</code>)</th><th>Ponteiro (<code>int *p;</code>)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>O que guarda</td><td>Um valor (ex.: 10)</td><td>Um endereço de memória (ex.: 0x1000)</td></tr>
+        <tr><td>Analogia</td><td>O morador dentro da casa</td><td>O papel com o endereço da casa</td></tr>
+        <tr><td>Como acessar o conteúdo</td><td>Usando o próprio nome: <code>x</code></td><td>Usando asterisco: <code>*p</code></td></tr>
+        <tr><td>Como pegar o endereço</td><td><code>&amp;x</code></td><td><code>&amp;p</code> (endereço do próprio ponteiro)</td></tr>
+        <tr><td>Precisa ser inicializado?</td><td>Recomendado (senão tem lixo)</td><td><strong>Obrigatório</strong> (senão é ponteiro selvagem)</td></tr>
+        <tr><td>Tamanho típico</td><td>Depende do tipo (int = 4 bytes)</td><td>8 bytes em máquinas 64 bits</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Comparação 2 — Passagem por Valor vs Passagem por Ponteiro</h2>
+    <table>
+      <thead>
+        <tr><th>Aspecto</th><th>Por Valor <code>void f(int n)</code></th><th>Por Ponteiro <code>void f(int *n)</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>O que a função recebe</td><td>Uma <strong>cópia</strong> do valor</td><td>O <strong>endereço</strong> da variável original</td></tr>
+        <tr><td>Como chamar</td><td><code>f(x);</code></td><td><code>f(&amp;x);</code></td></tr>
+        <tr><td>Altera a variável original?</td><td>❌ Não</td><td>✅ Sim</td></tr>
+        <tr><td>Como alterar dentro da função</td><td>Impossível alterar o original</td><td><code>*n = 10;</code> ou <code>(*n)++;</code></td></tr>
+        <tr><td>Analogia</td><td>Entregar uma fotocópia do documento</td><td>Entregar o endereço e a chave da casa</td></tr>
+        <tr><td>Uso típico</td><td>Quando só precisa ler o valor</td><td>Quando precisa modificar o valor original</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Comparação 3 — <code>v[i]</code> vs <code>*(p + i)</code></h2>
+    <table>
+      <thead>
+        <tr><th>Aspecto</th><th><code>v[i]</code></th><th><code>*(p + i)</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>O que significa</td><td>Acessa a posição i do vetor</td><td>Anda i casas a partir do endereço em p e pega o conteúdo</td></tr>
+        <tr><td>Resultado</td><td>O mesmo!</td><td>O mesmo!</td></tr>
+        <tr><td>Precisa de ponteiro declarado?</td><td>Não, só do vetor</td><td>Sim, precisa de um ponteiro <code>p</code></td></tr>
+        <tr><td>Legibilidade</td><td>Mais fácil para iniciantes</td><td>Mais "raiz" e comum em provas</td></tr>
+        <tr><td>Exemplo com i = 1</td><td><code>v[1]</code> → 10</td><td><code>*(p + 1)</code> → 10</td></tr>
+        <tr><td>Atenção</td><td><code>v[i]</code> já é açúcar sintático</td><td>Não confunda <code>*(p+1)</code> com <code>*p + 1</code> (esse soma 1 ao valor!)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box-pegadinha">
+      <span class="titulo-caixa">🚨 Pegadinha dos parênteses</span>
+      <code>*(p + 1)</code> → pega o <strong>próximo elemento</strong> (10).<br>
+      <code>*p + 1</code> → pega o elemento atual e <strong>soma 1</strong> (5 + 1 = 6).<br>
+      Os parênteses mudam completamente o resultado!
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Comparação 4 — <code>&amp;</code> vs <code>*</code></h2>
+    <table>
+      <thead>
+        <tr><th>Aspecto</th><th><code>&amp;</code> (endereço)</th><th><code>*</code> (conteúdo)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pergunta que responde</td><td>"Onde você mora?"</td><td>"O que tem dentro da casa?"</td></tr>
+        <tr><td>Exemplo com <code>int x = 10;</code></td><td><code>&amp;x</code> → 0x1000</td><td>—</td></tr>
+        <tr><td>Exemplo com <code>int *p = &amp;x;</code></td><td><code>&amp;p</code> → 0x2000</td><td><code>*p</code> → 10</td></tr>
+        <tr><td>Pode ser usado na declaração?</td><td>Não</td><td>Sim: <code>int *p;</code></td></tr>
+        <tr><td>Relação</td><td colspan="2" style="text-align:center;">Eles são <strong>inversos</strong>: <code>*(&amp;x)</code> é o mesmo que <code>x</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<!-- ============================= ABA 5: RESUMO ============================= -->
+<section id="resumo" class="tab-content">
+  <div class="card">
+    <h2>Resumo para a Véspera da Prova</h2>
+    <p>Leia estes 10 pontos em voz alta, devagar, antes de dormir. Eles resumem todo o assunto.</p>
+
+    <ul class="resumo-lista">
+      <li><strong>Variável normal guarda valor; ponteiro guarda endereço.</strong> O morador é o valor; o papel com o endereço é o ponteiro.</li>
+      <li><strong><code>&amp;x</code> = "onde você mora?"</strong> Pega o endereço da variável x. Sempre com <code>&amp;</code> na frente.</li>
+      <li><strong><code>*p</code> = "o que tem dentro dessa casa?"</strong> Acessa ou altera o valor que está no endereço guardado em p.</li>
+      <li><strong>Declarar é diferente de usar:</strong> <code>int *p;</code> apenas diz que p é ponteiro. <code>*p = 10;</code> mexe no conteúdo.</li>
+      <li><strong>Ponteiro selvagem mata o programa.</strong> Nunca use <code>*p</code> antes de dar um endereço válido. Use <code>NULL</code> e cheque <code>if (p != NULL)</code>.</li>
+      <li><strong>Passagem por valor copia; passagem por ponteiro altera o original.</strong> Chame com <code>f(&amp;x)</code> quando o parâmetro for <code>int *n</code>.</li>
+      <li><strong>Dentro de funções com ponteiros, compare <code>*a &gt; *b</code>, nunca <code>a &gt; b</code>.</strong> Comparar endereços não tem nada a ver com comparar números.</li>
+      <li><strong>Nome de vetor é ponteiro para o primeiro elemento.</strong> Por isso <code>v[i]</code> é exatamente igual a <code>*(v + i)</code>.</li>
+      <li><strong>Somar 1 a um ponteiro anda uma "casa" inteira na memória</strong> (4 bytes para int), não 1 byte.</li>
+      <li><strong>String em C termina com <code>'\0'.</code></strong> Percorra com <code>while (*p != '\0') { ... p++; }</code>.</li>
+    </ul>
+
+    <div class="box-dica">
+      <span class="titulo-caixa">💚 Checklist final de 30 segundos</span>
+      Antes de entregar a prova, confira: (1) coloquei <code>&amp;</code> nas chamadas de função? (2) usei <code>*</code> nas comparações dentro da função? (3) todos os ponteiros foram inicializados? (4) os parênteses de <code>*(p + i)</code> estão certos?
+    </div>
+  </div>
+</section>
+
+<!-- ============================= ABA 6: QUIZ ============================= -->
+<section id="quiz" class="tab-content">
+
+  <div class="card">
+    <h2>🎯 Teste Interativo — 5 Questões</h2>
+    <p>Clique na alternativa que você acha correta. O gabarito e a explicação aparecem na hora.</p>
+  </div>
+
+  <!-- Questão 1 -->
+  <div class="card quiz-card" data-q="1">
+    <p class="quiz-question">1) O que um ponteiro armazena dentro dele?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="responder(this, 0)">A) Um número inteiro qualquer digitado pelo programador</button>
+      <button class="quiz-opt" onclick="responder(this, 1)">B) Um endereço de memória</button>
+      <button class="quiz-opt" onclick="responder(this, 2)">C) Uma cópia completa da variável original</button>
+      <button class="quiz-opt" onclick="responder(this, 3)">D) Uma string com o nome da variável</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Questão 2 -->
+  <div class="card quiz-card" data-q="2">
+    <p class="quiz-question">2) Verdadeiro ou Falso: escrever apenas <code>int *p;</code> já deixa o ponteiro pronto para ser usado com segurança.</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="responder(this, 0)">Verdadeiro</button>
+      <button class="quiz-opt" onclick="responder(this, 1)">Falso</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Questão 3 -->
+  <div class="card quiz-card" data-q="3">
+    <p class="quiz-question">3) Dado o código <code>int x = 10; int *p = &amp;x;</code>, o que o comando <code>*p = 50;</code> faz?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="responder(this, 0)">A) Muda o endereço guardado dentro de p</button>
+      <button class="quiz-opt" onclick="responder(this, 1)">B) Muda o valor de x para 50</button>
+      <button class="quiz-opt" onclick="responder(this, 2)">C) Cria uma nova variável chamada p com valor 50</button>
+      <button class="quiz-opt" onclick="responder(this, 3)">D) Gera um erro de compilação</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Questão 4 -->
+  <div class="card quiz-card" data-q="4">
+    <p class="quiz-question">4) Por que a função <code>void troca(int a, int b)</code> NÃO consegue trocar os valores das variáveis originais?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="responder(this, 0)">A) Porque a linguagem C não permite trocar valores</button>
+      <button class="quiz-opt" onclick="responder(this, 1)">B) Porque ela recebe apenas cópias dos valores (passagem por valor)</button>
+      <button class="quiz-opt" onclick="responder(this, 2)">C) Porque falta um comando <code>return</code> no final</button>
+      <button class="quiz-opt" onclick="responder(this, 3)">D) Porque os parâmetros precisam ser inicializados com NULL</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Questão 5 -->
+  <div class="card quiz-card" data-q="5">
+    <p class="quiz-question">5) Se <code>int v[3] = {5, 10, 15};</code> e <code>int *p = v;</code>, então a expressão <code>*(p + 2)</code> é exatamente igual a:</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="responder(this, 0)">A) <code>v[0]</code>, ou seja, 5</button>
+      <button class="quiz-opt" onclick="responder(this, 1)">B) <code>v[1]</code>, ou seja, 10</button>
+      <button class="quiz-opt" onclick="responder(this, 2)">C) <code>v[2]</code>, ou seja, 15</button>
+      <button class="quiz-opt" onclick="responder(this, 3)">D) <code>&amp;v[2]</code>, ou seja, o endereço do terceiro elemento</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</section>
+
+<script>
+/* ============ 1. TROCA DE ABAS ============ */
+document.querySelectorAll('.tab-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.tab-btn').forEach(function (b) {
+      b.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(function (c) {
+      c.classList.remove('active');
+    });
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ============ 2. MOTOR DO QUIZ ============ */
+var gabarito = {
+  1: {
+    correta: 1,
+    exp: 'Um ponteiro guarda um ENDEREÇO DE MEMÓRIA, ou seja, o local onde um valor está armazenado. Lembre da analogia: a variável comum é o morador (o valor) e o ponteiro é o papel com o endereço da casa.'
+  },
+  2: {
+    correta: 1,
+    exp: 'FALSO! Escrever só "int *p;" cria um PONTEIRO SELVAGEM, que aponta para um endereço de lixo na memória. Se você tentar usar "*p" nesse estado, o programa pode travar. O correto é inicializar (ex.: "int *p = &x;") ou pelo menos usar "int *p = NULL;" e checar com "if (p != NULL)" antes de usar.'
+  },
+  3: {
+    correta: 1,
+    exp: 'O comando "*p = 50;" significa "vá até o endereço guardado em p e coloque 50 lá dentro". Como p guarda o endereço de x, o valor de x passa de 10 para 50. O endereço dentro de p NÃO muda — quem mudou foi o conteúdo da casa.'
+  },
+  4: {
+    correta: 1,
+    exp: 'Porque na passagem por VALOR a função recebe apenas CÓPIAS dos valores. Tudo o que ela fizer acontece nas cópias e o original fica intacto. Para trocar de verdade, é preciso passar os endereços: "void troca(int *a, int *b)" e chamar com "troca(&x, &y);".'
+  },
+  5: {
+    correta: 2,
+    exp: 'O nome do vetor "v" é um ponteiro para o primeiro elemento. Somar 2 ao ponteiro anda duas "casas" na memória, chegando ao terceiro elemento. Então "*(p + 2)" é o mesmo que "v[2]", que vale 15. Cuidado: "*(p + 2)" não é a mesma coisa que "*p + 2" — este último pegaria 5 e somaria 2, dando 7.'
+  }
+};
+
+function responder(botao, indice) {
+  var card = botao.closest('.quiz-card');
+  var numeroQuestao = card.dataset.q;
+  var info = gabarito[numeroQuestao];
+  var botoes = card.querySelectorAll('.quiz-opt');
+
+  // Desativa todas as opções e marca a correta
+  botoes.forEach(function (b, i) {
+    b.disabled = true;
+    b.style.cursor = 'default';
+    b.onclick = null;
+    if (i === info.correta) {
+      b.classList.add('certa');
+    }
+  });
+
+  // Marca a escolha errada do aluno
+  if (indice !== info.correta) {
+    botao.classList.add('errada');
+  }
+
+  // Mostra o feedback
+  var fb = card.querySelector('.feedback');
+  fb.style.display = 'block';
+
+  if (indice === info.correta) {
+    fb.className = 'feedback correct';
+    fb.innerHTML = '<strong>✅ Resposta correta!</strong><br>' + info.exp;
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.innerHTML = '<strong>❌ Resposta incorreta.</strong><br>' + info.exp;
+  }
+}
+
+/* ============ 3. DESTAQUE DE SINTAXE ============ */
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.hljs) {
+    hljs.highlightAll();
+  }
+});
+</script>
+
+</body>
+</html>
