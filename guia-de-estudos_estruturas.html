@@ -95,6 +95,83 @@ footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top
 </head>
 <body>
 
+  <!-- ============================================================
+     ▼▼▼ BOTÃO VOLTAR AO HUB ▼▼▼
+     Cole este bloco UMA vez, logo depois de <body>, em cada módulo.
+     Não precisa mexer em mais nada — o CSS já está embutido.
+     Se o arquivo inicial não se chamar "index.html", troque o href.
+     ============================================================ -->
+<a href="index.html" class="btn-voltar-hub" aria-label="Voltar ao início" title="Voltar ao início">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M19 12H5"/>
+    <path d="M12 19l-7-7 7-7"/>
+  </svg>
+  <span>Início</span>
+</a>
+
+<style>
+/* Botão flutuante "Voltar ao hub" — fixo no canto inferior direito.
+   Não interfere nas abas sticky nem no conteúdo dos módulos. */
+.btn-voltar-hub {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 999;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 11px 18px;
+  border-radius: 999px;
+
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-decoration: none;
+
+  color: #FFFFFF;
+  background: #4F46E5;      /* --accent */
+  border: 1px solid #4F46E5;
+
+  box-shadow: 0 8px 22px rgba(79, 70, 229, .35);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.btn-voltar-hub:hover {
+  transform: translateY(-2px);
+  background: #4338CA;
+  box-shadow: 0 12px 28px rgba(79, 70, 229, .45);
+}
+
+.btn-voltar-hub:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+.btn-voltar-hub svg {
+  transition: transform .18s ease;
+}
+
+.btn-voltar-hub:hover svg {
+  transform: translateX(-2px);
+}
+
+/* No celular, encolhe para só o ícone, liberando espaço na tela. */
+@media (max-width: 640px) {
+  .btn-voltar-hub {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px;
+  }
+  .btn-voltar-hub span {
+    display: none;
+  }
+}
+</style>
+<!-- ▲▲▲ FIM DO BOTÃO VOLTAR AO HUB ▲▲▲ -->
+
 <div class="header">
   <h1>Guia de Estudos · ADS - Estruturas de Dados em C</h1>
   <p>Listas, Filas, Pilhas e Grafos — do zero, com analogias do dia a dia e código C simples</p>
